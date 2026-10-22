@@ -1,0 +1,19 @@
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+
+# Virtual environment
+.venv/
+
+# Vendored dataset clone -- pinned via provenance/verilogeval-commit.txt,
+# re-clone at that commit instead of vendoring it into this repo.
+third_party/verilog-eval/
+
+# Simulation / synthesis build artifacts
+*.vvp
+*.vcd
+yosys_*.log
+
+# Local Claude Code tool settings (not part of the project)
+.claude/

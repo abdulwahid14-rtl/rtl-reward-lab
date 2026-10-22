@@ -1,0 +1,1 @@
+This project evaluates generated RTL on a small VerilogEval subset. It rewards reduced synthesized cell count and logic depth only after functional checks pass. It includes deliberately incorrect and evaluator-manipulating submissions to study reward hacking. It is an RL-style environment, not an RL-trained model.

@@ -1,0 +1,10 @@
+{
+  "tasks": [
+    {
+      "id": "popcount3",
+      "prompt": "third_party/verilog-eval/dataset_spec-to-rtl/Prob009_popcount3_prompt.txt",
+      "reference": "third_party/verilog-eval/dataset_spec-to-rtl/Prob009_popcount3_ref.sv",
+      "test": "third_party/verilog-eval/dataset_spec-to-rtl/Prob009_popcount3_test.sv"
+    }
+  ]
+}
