@@ -1,0 +1,41 @@
+Implement a 4-tap-per-phase, 4x-interpolating polyphase FIR filter named
+TopModule, used as the pulse-shaping interpolator in a transmit path.
+
+Interface:
+  input         IwClk_500M       - clock
+  input         IwRst_n_500M     - asynchronous, active-low reset
+  input         enb              - clock enable; when low, all internal
+                                    state holds its value
+  input  signed [1:0]  IwPulseIn        - input sample, sfix2 (values -2..1)
+  input  signed [7:0]  IwCoeffsIn_0..31 - 32 filter coefficients, sfix8_En7
+                                           (Q1.7 fixed point)
+  output signed [7:0]  OwSampleOut_0..3 - the 4 interpolated output phases
+                                           produced for each input sample,
+                                           sfix8_En7
+
+Behavior:
+1. Delay line: maintain an 8-deep history of IwPulseIn. Tap 0 is the
+   current input sample (combinational passthrough, not registered).
+   Taps 1-7 are produced by a 7-deep register chain clocked on
+   IwClk_500M, synchronously held while enb is low, and reset to 0 on
+   IwRst_n_500M low (asynchronous).
+
+2. Polyphase decomposition: the 32 coefficients are split into 4 phases
+   of 8 taps each. Phase p (p = 0..3) uses coefficients
+   IwCoeffsIn_{p}, IwCoeffsIn_{p+4}, IwCoeffsIn_{p+8}, ..., IwCoeffsIn_{p+28}
+   paired respectively with delay taps 0..7. Each phase computes
+     sum_i taps[i] * coeffs[p + 4*i]   for i = 0..7
+   as an 11-bit signed accumulator (sfix11_En7), registered once per
+   enabled clock edge (reset to 0 on IwRst_n_500M low).
+
+3. Output saturation: each phase's 11-bit accumulator is cast down to
+   the 8-bit sfix8_En7 output by saturating, not wrapping:
+     - if the value is positive and would overflow 8 bits, output the
+       most positive representable value (8'sb01111111)
+     - if the value is negative and would overflow 8 bits, output the
+       most negative representable value (8'sb10000000)
+     - otherwise, output the low 8 bits unchanged (truncation of the
+       fractional alignment, no rounding)
+
+OwSampleOut_0..3 are the 4 phases in order (phase 0 through phase 3),
+all updated together each enabled clock edge.

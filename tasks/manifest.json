@@ -5,6 +5,12 @@
       "prompt": "third_party/verilog-eval/dataset_spec-to-rtl/Prob009_popcount3_prompt.txt",
       "reference": "third_party/verilog-eval/dataset_spec-to-rtl/Prob009_popcount3_ref.sv",
       "test": "third_party/verilog-eval/dataset_spec-to-rtl/Prob009_popcount3_test.sv"
+    },
+    {
+      "id": "pulse_shaping_fir",
+      "prompt": "examples/correct/pulse_shaping_fir/prompt.txt",
+      "reference": "examples/correct/pulse_shaping_fir/reference.sv",
+      "test": "examples/correct/pulse_shaping_fir/official_test.sv"
     }
   ]
 }
