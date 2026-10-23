@@ -19,12 +19,25 @@ _FORBIDDEN_PATTERNS = (
     (re.compile(r"\$finish\b"), "$finish is reserved for the trusted testbench"),
     (re.compile(r"\$stop\b"), "$stop is reserved for the trusted testbench"),
     (
-        re.compile(r"\$display\b|\$write\b|\$strobe\b|\$monitor\b"),
-        "simulation output ($display/$write/$strobe/$monitor) is reserved for the trusted testbench",
+        re.compile(r"\$display\w*\b|\$write\w*\b|\$strobe\w*\b|\$monitor\w*\b"),
+        "simulation output ($display/$write/$strobe/$monitor and their "
+        "radix/enable variants, e.g. $displayh, $writeb, $monitoron) is "
+        "reserved for the trusted testbench",
     ),
     (
         re.compile(r"\$info\b|\$warning\b|\$error\b|\$fatal\b"),
         "SystemVerilog severity tasks ($info/$warning/$error/$fatal) are reserved for the trusted testbench",
+    ),
+    (
+        re.compile(r"^\s*`(ifdef|ifndef|else|elsif|endif|define|undef)\b", re.MULTILINE),
+        "preprocessor conditional/definition directives (`ifdef/`define/etc.) "
+        "are not permitted -- they let a candidate present different code to "
+        "the simulator and the synthesizer",
+    ),
+    (
+        re.compile(r"\btb\s*\.\w+|\$root\b"),
+        "hierarchical references into the testbench ('tb.') or the design "
+        "root ('$root') are not permitted",
     ),
 )
 
