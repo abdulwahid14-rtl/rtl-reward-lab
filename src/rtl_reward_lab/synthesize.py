@@ -32,24 +32,37 @@ def synthesize(
     """Run a fixed synth + stat + ltp flow over a single source file and
     extract its cell count and logic depth.
 
-    The flow (`synth -top <module>; stat; ltp`) is intentionally fixed so
-    that cell count and logic depth are comparable across candidates and
-    the reference implementation.
+    The flow (`synth -top <module>; flatten; stat; ltp`) is intentionally
+    fixed so that cell count and logic depth are comparable across
+    candidates and the reference implementation.
+
+    Two things make naive regex extraction wrong here, both handled below:
+
+    1. `flatten` is required: without it, our own `stat` call reports
+       per-module statistics, so a hierarchical design's top-level section
+       only counts one "cell" per submodule instance (not that submodule's
+       internal cells).
+    2. `synth` itself prints its own internal, pre-flatten, per-module stat
+       report as part of its normal flow, *before* our explicit `stat`
+       command ever runs. That means stdout contains multiple "Number of
+       cells:" lines, and the first one belongs to synth's own report, not
+       ours. We take the *last* match of each metric so we read our final,
+       post-flatten `stat`/`ltp` instead of synth's internal one.
     """
 
-    script = f'read_verilog -sv "{source_path}"; synth -top {top_module}; stat; ltp'
+    script = f'read_verilog -sv "{source_path}"; synth -top {top_module}; flatten; stat; ltp'
     run_result = run(["yosys", "-p", script], cwd=cwd, limits=limits)
 
     if run_result.timed_out or run_result.returncode != 0:
         return SynthesizeResult(ok=False, metrics=None, run_result=run_result)
 
-    cell_match = _CELL_COUNT_RE.search(run_result.stdout)
-    depth_match = _LONGEST_PATH_RE.search(run_result.stdout)
-    if cell_match is None or depth_match is None:
+    cell_matches = _CELL_COUNT_RE.findall(run_result.stdout)
+    depth_matches = _LONGEST_PATH_RE.findall(run_result.stdout)
+    if not cell_matches or not depth_matches:
         return SynthesizeResult(ok=False, metrics=None, run_result=run_result)
 
     metrics = SynthesisMetrics(
-        cell_count=int(cell_match.group(1)),
-        logic_depth=int(depth_match.group(1)),
+        cell_count=int(cell_matches[-1]),
+        logic_depth=int(depth_matches[-1]),
     )
     return SynthesizeResult(ok=True, metrics=metrics, run_result=run_result)
