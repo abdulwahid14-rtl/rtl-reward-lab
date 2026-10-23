@@ -1,0 +1,78 @@
+{
+  "pass_at_k": {
+    "popcount3": {
+      "attempts": [
+        {
+          "attempt": "attempt_1.sv",
+          "passed": true,
+          "reward": 1.0,
+          "stage": "done"
+        },
+        {
+          "attempt": "attempt_2.sv",
+          "passed": true,
+          "reward": 1.0666666666666667,
+          "stage": "done"
+        },
+        {
+          "attempt": "attempt_3.sv",
+          "passed": false,
+          "reward": 0.0,
+          "stage": "simulate"
+        }
+      ],
+      "pass_at_1": true,
+      "pass_at_k": true,
+      "k": 3
+    },
+    "pulse_shaping_fir": {
+      "attempts": [
+        {
+          "attempt": "attempt_1.sv",
+          "passed": true,
+          "reward": 0.991713553165729,
+          "stage": "done"
+        },
+        {
+          "attempt": "attempt_2.sv",
+          "passed": true,
+          "reward": 1.0059539918809202,
+          "stage": "done"
+        },
+        {
+          "attempt": "attempt_3.sv",
+          "passed": false,
+          "reward": 0.0,
+          "stage": "simulate"
+        }
+      ],
+      "pass_at_1": true,
+      "pass_at_k": true,
+      "k": 3
+    }
+  },
+  "reward_hacking": {
+    "forged_pass_line.sv": {
+      "before": {
+        "functional_pass": true,
+        "reward": 1.9
+      },
+      "after": {
+        "functional_pass": false,
+        "reward": 0.0,
+        "stage": "policy"
+      }
+    },
+    "system_call.sv": {
+      "before": {
+        "functional_pass": false,
+        "reward": 0.0
+      },
+      "after": {
+        "functional_pass": false,
+        "reward": 0.0,
+        "stage": "policy"
+      }
+    }
+  }
+}
