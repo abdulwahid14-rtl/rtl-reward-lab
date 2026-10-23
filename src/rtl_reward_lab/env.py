@@ -57,10 +57,13 @@ class RTLRewardEnv:
                 cwd=tmp_path,
             )
             if not eval_result.passed:
+                info: dict[str, Any] = {"stage": eval_result.stage}
+                if eval_result.policy_result is not None:
+                    info["policy_violations"] = eval_result.policy_result.violations
                 return StepResult(
                     reward=compute_reward(functional_pass=False),
                     passed=False,
-                    info={"stage": eval_result.stage},
+                    info=info,
                 )
 
             candidate_synth = synthesize(candidate_path, top_module="TopModule", cwd=tmp_path)
@@ -86,5 +89,8 @@ class RTLRewardEnv:
                     "stage": "done",
                     "candidate_metrics": candidate_synth.metrics,
                     "reference_metrics": reference_synth.metrics,
+                    "formal_equivalent": eval_result.formal_result.equivalent
+                    if eval_result.formal_result is not None
+                    else None,
                 },
             )

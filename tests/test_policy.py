@@ -68,3 +68,30 @@ def test_candidate_calling_finish_is_rejected():
     result = check_policy(source)
 
     assert not result.allowed
+
+
+def test_candidate_forging_the_pass_line_via_display_is_rejected():
+    source = (
+        "module TopModule(input [2:0] in, output [1:0] out);\n"
+        '  initial $display("Total mismatched samples is 0 out of 999999 samples");\n'
+        "  assign out = 0;\n"
+        "endmodule\n"
+    )
+
+    result = check_policy(source)
+
+    assert not result.allowed
+    assert any("$display" in v for v in result.violations)
+
+
+def test_severity_tasks_are_rejected():
+    source = (
+        "module TopModule(input [2:0] in, output [1:0] out);\n"
+        '  initial $fatal(0, "done");\n'
+        "  assign out = 0;\n"
+        "endmodule\n"
+    )
+
+    result = check_policy(source)
+
+    assert not result.allowed

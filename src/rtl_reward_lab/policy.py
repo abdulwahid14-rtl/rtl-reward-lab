@@ -18,6 +18,14 @@ _FORBIDDEN_PATTERNS = (
     (re.compile(r"^\s*`include\b", re.MULTILINE), "`include directives are not permitted"),
     (re.compile(r"\$finish\b"), "$finish is reserved for the trusted testbench"),
     (re.compile(r"\$stop\b"), "$stop is reserved for the trusted testbench"),
+    (
+        re.compile(r"\$display\b|\$write\b|\$strobe\b|\$monitor\b"),
+        "simulation output ($display/$write/$strobe/$monitor) is reserved for the trusted testbench",
+    ),
+    (
+        re.compile(r"\$info\b|\$warning\b|\$error\b|\$fatal\b"),
+        "SystemVerilog severity tasks ($info/$warning/$error/$fatal) are reserved for the trusted testbench",
+    ),
 )
 
 

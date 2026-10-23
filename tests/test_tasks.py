@@ -5,14 +5,14 @@ import pytest
 from rtl_reward_lab.tasks import load_tasks
 
 
-def test_default_manifest_loads_popcount3():
+def test_default_manifest_loads_all_tasks():
     tasks = load_tasks()
 
-    assert [t.id for t in tasks] == ["popcount3"]
-    task = tasks[0]
-    assert task.prompt_path.is_file()
-    assert task.reference_path.is_file()
-    assert task.test_path.is_file()
+    assert {t.id for t in tasks} == {"popcount3", "pulse_shaping_fir"}
+    for task in tasks:
+        assert task.prompt_path.is_file()
+        assert task.reference_path.is_file()
+        assert task.test_path.is_file()
 
 
 def test_missing_referenced_file_raises(tmp_path):

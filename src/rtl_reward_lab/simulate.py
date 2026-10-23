@@ -77,8 +77,13 @@ def simulate(
             simulate_result=simulate_result,
         )
 
-    match = _MISMATCH_RE.search(simulate_result.stdout)
-    if match is None:
+    matches = _MISMATCH_RE.findall(simulate_result.stdout)
+    if len(matches) != 1:
+        # Zero matches means the testbench never reached its own report line
+        # (e.g. it crashed or was starved of time). More than one match means
+        # something other than the trusted testbench's own final report wrote
+        # a line matching this pattern -- most plausibly a candidate trying to
+        # forge a passing result via $display. Either way, don't trust it.
         return SimulateResult(
             passed=False,
             stage="simulate",
@@ -88,7 +93,7 @@ def simulate(
             simulate_result=simulate_result,
         )
 
-    mismatches, total_samples = int(match.group(1)), int(match.group(2))
+    mismatches, total_samples = int(matches[0][0]), int(matches[0][1])
     return SimulateResult(
         passed=mismatches == 0,
         stage="done",

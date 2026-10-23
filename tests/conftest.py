@@ -5,6 +5,8 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 POPCOUNT3_DIR = REPO_ROOT / "examples" / "correct" / "popcount3"
+PULSE_SHAPING_FIR_DIR = REPO_ROOT / "examples" / "correct" / "pulse_shaping_fir"
+ADVERSARIAL_DIR = REPO_ROOT / "examples" / "adversarial"
 
 
 @pytest.fixture
@@ -15,12 +17,29 @@ def popcount3_dir() -> Path:
 
 
 @pytest.fixture
+def adversarial_dir() -> Path:
+    """Directory of standalone adversarial candidate .sv files."""
+
+    return ADVERSARIAL_DIR
+
+
+@pytest.fixture
 def work_dir(tmp_path: Path, popcount3_dir: Path) -> Path:
     """A scratch copy of the popcount3 example so tests can write compiler
     artifacts (simulation.vvp, wave.vcd) without touching the repo."""
 
     for name in ("candidate.sv", "reference.sv", "official_test.sv"):
         shutil.copy(popcount3_dir / name, tmp_path / name)
+    return tmp_path
+
+
+@pytest.fixture
+def fir_work_dir(tmp_path: Path) -> Path:
+    """A scratch copy of the pulse_shaping_fir example (sequential design,
+    used to exercise the formal-equivalence non-gating behavior)."""
+
+    for name in ("candidate.sv", "reference.sv", "official_test.sv"):
+        shutil.copy(PULSE_SHAPING_FIR_DIR / name, tmp_path / name)
     return tmp_path
 
 
