@@ -1,5 +1,5 @@
 {
-  "pass_at_k": {
+  "sanity_checks": {
     "popcount3": {
       "attempts": [
         {
@@ -21,8 +21,8 @@
           "stage": "simulate"
         }
       ],
-      "pass_at_1": true,
-      "pass_at_k": true,
+      "fraction_passed": 0.6666666666666666,
+      "any_passed": true,
       "k": 3
     },
     "pulse_shaping_fir": {
@@ -44,11 +44,17 @@
           "passed": false,
           "reward": 0.0,
           "stage": "simulate"
+        },
+        {
+          "attempt": "attempt_4_spec_only.sv",
+          "passed": true,
+          "reward": 0.95890249982195,
+          "stage": "done"
         }
       ],
-      "pass_at_1": true,
-      "pass_at_k": true,
-      "k": 3
+      "fraction_passed": 0.75,
+      "any_passed": true,
+      "k": 4
     }
   },
   "reward_hacking": {
@@ -56,6 +62,17 @@
       "before": {
         "functional_pass": true,
         "reward": 1.9
+      },
+      "after": {
+        "functional_pass": false,
+        "reward": 0.0,
+        "stage": "policy"
+      }
+    },
+    "ifdef_synthesis_differential.sv": {
+      "before": {
+        "functional_pass": true,
+        "reward": 2.0
       },
       "after": {
         "functional_pass": false,

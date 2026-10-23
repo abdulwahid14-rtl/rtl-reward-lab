@@ -21,16 +21,23 @@ per-stage breakdown.
 ## Threat model
 
 The evaluator itself is part of the attack surface: a candidate shouldn't
-be able to fake a passing simulation, escape to the shell/filesystem, or
-redefine what it's being compared against. The pipeline enforces a
-restricted RTL subset (`policy.py`) and treats the trusted testbench as the
-sole source of simulation output and pass/fail signal (`simulate.py`
-requires its report line to appear *exactly once*). This was not a
-theoretical concern — an earlier version of this pipeline was confirmed
-vulnerable to a candidate that printed the testbench's own "0 mismatches"
-line itself via `$display`, scoring `1.90` on a functionally wrong module.
-See [docs/reward-design.md](docs/reward-design.md#threat-model-evaluator-manipulation-reward-hacking)
-for the full writeup, the fix, and `examples/adversarial/` for the probes.
+be able to fake a passing simulation, escape to the shell/filesystem,
+redefine what it's being compared against, or present different behavior
+to the tool that checks it than to the tool that rewards it. The pipeline
+enforces a restricted RTL subset (`policy.py`), treats the trusted
+testbench as the sole source of simulation output and pass/fail signal
+(`simulate.py` requires its report line to appear *exactly once*), and
+re-simulates the candidate's **actual synthesized netlist** — not just its
+source — against that same testbench before rewarding it. None of this is
+theoretical: two confirmed exploits were found and closed this way. One
+printed the testbench's own "0 mismatches" line itself via `$display`,
+scoring `1.90` on a functionally wrong module. The other presented correct
+behavior to the simulator and a trivially wrong, empty design to the
+synthesizer via an `` `ifdef SYNTHESIS `` guard (Yosys defines `SYNTHESIS`
+by default; Icarus Verilog does not), scoring the maximum possible reward
+of `2.0`, completely silently. See
+[docs/reward-design.md](docs/reward-design.md#threat-model-evaluator-manipulation-reward-hacking)
+for both writeups, the fixes, and `examples/adversarial/` for the probes.
 
 A SAT-based formal equivalence check (`formal.py`) also runs on every
 passing candidate, but as a non-gating diagnostic only — it's exact for
@@ -74,7 +81,7 @@ via `rtl_reward_lab.tasks.load_tasks()`. There are currently two:
   its own reference, candidate, and testbench under
   [examples/correct/pulse_shaping_fir/](examples/correct/pulse_shaping_fir/).
 
-To reproduce the pass@k and reward-hacking experiments below:
+To reproduce the sanity-check and reward-hacking experiments below:
 
 ```bash
 python3 scripts/run_experiments.py
@@ -87,26 +94,33 @@ prints the same tables shown below.
 
 Full writeup in [docs/reward-design.md](docs/reward-design.md#results).
 
-### pass@k
+### Pipeline sanity checks (not a pass@k estimate)
 
-Three independent, blind attempts per task run through the full pipeline:
+A handful of hand-written attempts per task, not samples from a real
+model — see [docs/reward-design.md](docs/reward-design.md#pipeline-sanity-checks-not-a-passk-estimate)
+for why this is deliberately not called pass@k, and what a real pass@k
+study here would need.
 
-| task | k | pass@1 | pass@k | per-attempt reward |
+| task | attempts | fraction passed | any passed | per-attempt reward |
 | --- | --- | --- | --- | --- |
-| popcount3 | 3 | True | True | 1.00, 1.07, 0.00 |
-| pulse_shaping_fir | 3 | True | True | 0.99, 1.01, 0.00 |
+| popcount3 | 3 | 0.67 | True | 1.00, 1.07, 0.00 |
+| pulse_shaping_fir | 4 | 0.75 | True | 0.99, 1.01, 0.00, 0.96 |
 
-Each task's third attempt is deliberately plausible-but-wrong, included to
-confirm the pipeline actually fails bad candidates.
+Each task includes a deliberately plausible-but-wrong attempt, confirming
+the pipeline actually fails bad candidates. `pulse_shaping_fir`'s fourth
+attempt was written from the task's text prompt alone, without looking at
+the reference or the other hand-written candidate.
 
 ### Reward hacking: before vs. after defenses
 
 | adversarial file | reward before | reward after | stage (after) |
 | --- | --- | --- | --- |
 | forged_pass_line.sv | 1.90 | 0.00 | policy |
+| ifdef_synthesis_differential.sv | 2.00 | 0.00 | policy |
 | system_call.sv | 0.00 | 0.00 | policy |
 
-`forged_pass_line.sv` is the confirmed exploit (see Threat model above).
+Both `forged_pass_line.sv` and `ifdef_synthesis_differential.sv` are
+confirmed exploits (see Threat model above).
 
 ## Project layout
 
@@ -118,7 +132,7 @@ examples/correct/     reference designs + hand-written candidates
 examples/adversarial/ evaluator-manipulation probes
 third_party/           fetched via scripts/setup_verilog_eval.sh, not committed
 provenance/            pinned upstream commit hashes
-runs/                  experiment outputs (pass@k, reward-hacking before/after)
+runs/                  experiment outputs (sanity checks, reward-hacking before/after)
 docs/                  reward design writeup
 tests/                 pytest suite
 ```
@@ -129,6 +143,13 @@ tests/                 pytest suite
   to temporal induction (Yosys `equiv_induct`) or bounded model checking so
   formal verification can gate sequential designs instead of being
   diagnostic-only.
+- **A real pass@k study** — sample 10–20 attempts per task from an actual
+  model across 20+ VerilogEval problems and report the Chen et al. (2021)
+  unbiased estimator, instead of today's hand-written sanity checks.
+- **Parser-based policy enforcement** — replace the regex denylist in
+  `policy.py` with an AST-based allowlist (e.g. via `pyslang` or
+  Verilator's lint output), which a determined macro-based or
+  comment/string-confusing candidate could in principle evade.
 - **Multi-step episodes** — let the policy see evaluator feedback (failing
   stage, policy violation, mismatch count) and resubmit within an episode,
   rather than one-shot `step()`.
@@ -136,4 +157,4 @@ tests/                 pytest suite
   needs async/job-queue execution and result caching rather than blocking
   calls.
 
-Details on all three are in [docs/reward-design.md](docs/reward-design.md#next-steps).
+Details on all of these are in [docs/reward-design.md](docs/reward-design.md#next-steps).
