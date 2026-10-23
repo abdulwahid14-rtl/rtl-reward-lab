@@ -13,22 +13,6 @@ from rtl_reward_lab.synthesize import SynthesizeResult, find_simcells_v, synthes
 
 _NETLIST_FILENAME = "_candidate_netlist.v"
 
-# A gate-level netlist (one primitive cell per $_AND_/$_DFFE_PN0P_/etc, each
-# needing its own behavioral model from simcells.v) compiles to a much
-# larger iverilog .vvp bytecode file than the same design's RTL source --
-# e.g. ~1.02 MB for a design whose RTL-level build is a few hundred KB.
-# RunLimits' default max_output_bytes (1 MiB) is sized for RTL-level
-# compiles and is too tight for this, so it's floored here regardless of
-# what the caller passed in.
-_MIN_NETLIST_SIMULATE_OUTPUT_BYTES = 16 * 1024 * 1024
-
-
-def _with_netlist_output_floor(limits: RunLimits | None) -> RunLimits:
-    base = limits or RunLimits()
-    if base.max_output_bytes >= _MIN_NETLIST_SIMULATE_OUTPUT_BYTES:
-        return base
-    return dataclasses.replace(base, max_output_bytes=_MIN_NETLIST_SIMULATE_OUTPUT_BYTES)
-
 
 @dataclasses.dataclass(frozen=True)
 class EvaluationResult:
@@ -149,7 +133,7 @@ def evaluate(
         reference_path,
         test_path,
         cwd=cwd,
-        limits=_with_netlist_output_floor(limits),
+        limits=limits,
         extra_sources=(simcells_path,),
     )
     if not netlist_sim_result.passed:

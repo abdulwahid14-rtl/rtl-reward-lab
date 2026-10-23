@@ -45,3 +45,26 @@ def test_command_runs_in_the_given_cwd(tmp_path):
 
     assert result.returncode == 0
     assert result.stdout == "found"
+
+
+def test_default_output_limit_allows_a_few_megabyte_file():
+    # A longer-running trusted testbench can legitimately dump a multi-MB
+    # VCD trace via $dumpvars even for a correct candidate (confirmed on a
+    # real task: ~1.2 MB for a correct BCD counter). The old 1 MiB default
+    # silently killed vvp mid-dump with SIGXFSZ, indistinguishable from a
+    # real functional failure. Guard against that regressing.
+    assert RunLimits().max_output_bytes >= 4 * 1024 * 1024
+
+
+def test_file_write_past_the_limit_is_killed_by_sigxfsz(tmp_path):
+    script = "f = open('out.bin', 'wb')\nf.write(b'0' * (3 * 1024 * 1024))\n"
+    (tmp_path / "write_big.py").write_text(script)
+
+    result = run(
+        ["python3", "write_big.py"],
+        cwd=tmp_path,
+        limits=RunLimits(max_output_bytes=1024 * 1024),
+    )
+
+    assert not result.timed_out
+    assert result.returncode != 0

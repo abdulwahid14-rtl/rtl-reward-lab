@@ -17,7 +17,15 @@ class RunLimits:
     timeout_seconds: float = 30.0
     cpu_seconds: int = 30
     memory_bytes: int = 512 * 1024 * 1024
-    max_output_bytes: int = 1 * 1024 * 1024
+    # A longer-running trusted testbench (thousands of clock cycles) can
+    # legitimately dump a multi-megabyte VCD trace via $dumpvars even for a
+    # correct candidate -- confirmed empirically (a correct BCD-counter
+    # candidate's VCD trace is ~1.2 MB). A 1 MiB cap silently kills vvp
+    # mid-dump with SIGXFSZ, which earlier surfaced as a false "simulate"
+    # failure indistinguishable from a real functional mismatch. 16 MiB
+    # keeps a real bound (this is still a hard cap, not unlimited) while
+    # covering every task in this project's test suite and experiments.
+    max_output_bytes: int = 16 * 1024 * 1024
 
 
 @dataclasses.dataclass(frozen=True)
