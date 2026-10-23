@@ -1,0 +1,1362 @@
+{
+  "Prob003_step_one": {
+    "samples": [
+      {
+        "sample": "sample_01.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_02.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_03.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_04.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_05.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_06.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_07.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_08.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_09.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_10.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      }
+    ],
+    "n": 10,
+    "c": 10,
+    "pass_at_1": 1.0,
+    "pass_at_k_full": 1.0
+  },
+  "Prob005_notgate": {
+    "samples": [
+      {
+        "sample": "sample_01.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_02.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_03.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_04.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_05.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_06.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_07.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_08.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_09.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_10.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      }
+    ],
+    "n": 10,
+    "c": 10,
+    "pass_at_1": 1.0,
+    "pass_at_k_full": 1.0
+  },
+  "Prob009_popcount3": {
+    "samples": [
+      {
+        "sample": "sample_01.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_02.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_03.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_04.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_05.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_06.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_07.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_08.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_09.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_10.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      }
+    ],
+    "n": 10,
+    "c": 10,
+    "pass_at_1": 1.0,
+    "pass_at_k_full": 1.0
+  },
+  "Prob014_andgate": {
+    "samples": [
+      {
+        "sample": "sample_01.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_02.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_03.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_04.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_05.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_06.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_07.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_08.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_09.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_10.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      }
+    ],
+    "n": 10,
+    "c": 10,
+    "pass_at_1": 1.0,
+    "pass_at_k_full": 1.0
+  },
+  "Prob022_mux2to1": {
+    "samples": [
+      {
+        "sample": "sample_01.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_02.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_03.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_04.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_05.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_06.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_07.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_08.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_09.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_10.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      }
+    ],
+    "n": 10,
+    "c": 10,
+    "pass_at_1": 1.0,
+    "pass_at_k_full": 1.0
+  },
+  "Prob024_hadd": {
+    "samples": [
+      {
+        "sample": "sample_01.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_02.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_03.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_04.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_05.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_06.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_07.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_08.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_09.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_10.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      }
+    ],
+    "n": 10,
+    "c": 10,
+    "pass_at_1": 1.0,
+    "pass_at_k_full": 1.0
+  },
+  "Prob027_fadd": {
+    "samples": [
+      {
+        "sample": "sample_01.sv",
+        "passed": true,
+        "reward": 0.8,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_02.sv",
+        "passed": true,
+        "reward": 0.8,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_03.sv",
+        "passed": true,
+        "reward": 0.8,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_04.sv",
+        "passed": true,
+        "reward": 0.8,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_05.sv",
+        "passed": true,
+        "reward": 0.8,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_06.sv",
+        "passed": true,
+        "reward": 0.8,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_07.sv",
+        "passed": true,
+        "reward": 0.8,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_08.sv",
+        "passed": true,
+        "reward": 0.8,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_09.sv",
+        "passed": true,
+        "reward": 0.8,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_10.sv",
+        "passed": true,
+        "reward": 0.8,
+        "stage": "done"
+      }
+    ],
+    "n": 10,
+    "c": 10,
+    "pass_at_1": 1.0,
+    "pass_at_k_full": 1.0
+  },
+  "Prob030_popcount255": {
+    "samples": [
+      {
+        "sample": "sample_01.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_02.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_03.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_04.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_05.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_06.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_07.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_08.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_09.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_10.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      }
+    ],
+    "n": 10,
+    "c": 10,
+    "pass_at_1": 1.0,
+    "pass_at_k_full": 1.0
+  },
+  "Prob050_kmap1": {
+    "samples": [
+      {
+        "sample": "sample_01.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_02.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_03.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_04.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_05.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_06.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_07.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_08.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_09.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_10.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      }
+    ],
+    "n": 10,
+    "c": 9,
+    "pass_at_1": 0.9,
+    "pass_at_k_full": 1.0
+  },
+  "Prob069_truthtable1": {
+    "samples": [
+      {
+        "sample": "sample_01.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_02.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_03.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_04.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_05.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_06.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_07.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_08.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_09.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_10.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      }
+    ],
+    "n": 10,
+    "c": 10,
+    "pass_at_1": 1.0,
+    "pass_at_k_full": 1.0
+  },
+  "Prob031_dff": {
+    "samples": [
+      {
+        "sample": "sample_01.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_02.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_03.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_04.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_05.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_06.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_07.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_08.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_09.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_10.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      }
+    ],
+    "n": 10,
+    "c": 9,
+    "pass_at_1": 0.9,
+    "pass_at_k_full": 1.0
+  },
+  "Prob034_dff8": {
+    "samples": [
+      {
+        "sample": "sample_01.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_02.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_03.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_04.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_05.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_06.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_07.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_08.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_09.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_10.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      }
+    ],
+    "n": 10,
+    "c": 0,
+    "pass_at_1": 0.0,
+    "pass_at_k_full": 0.0
+  },
+  "Prob040_count10": {
+    "samples": [
+      {
+        "sample": "sample_01.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_02.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_03.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_04.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_05.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_06.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_07.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_08.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_09.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_10.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      }
+    ],
+    "n": 10,
+    "c": 10,
+    "pass_at_1": 1.0,
+    "pass_at_k_full": 1.0
+  },
+  "Prob046_dff8p": {
+    "samples": [
+      {
+        "sample": "sample_01.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_02.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_03.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_04.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_05.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_06.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_07.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_08.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_09.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_10.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      }
+    ],
+    "n": 10,
+    "c": 9,
+    "pass_at_1": 0.9,
+    "pass_at_k_full": 1.0
+  },
+  "Prob063_review2015_shiftcount": {
+    "samples": [
+      {
+        "sample": "sample_01.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_02.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_03.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_04.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_05.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_06.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_07.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_08.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_09.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_10.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      }
+    ],
+    "n": 10,
+    "c": 10,
+    "pass_at_1": 1.0,
+    "pass_at_k_full": 1.0
+  },
+  "Prob068_countbcd": {
+    "samples": [
+      {
+        "sample": "sample_01.sv",
+        "passed": true,
+        "reward": 0.9159604519774012,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_02.sv",
+        "passed": true,
+        "reward": 0.9159604519774012,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_03.sv",
+        "passed": true,
+        "reward": 0.9159604519774012,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_04.sv",
+        "passed": true,
+        "reward": 0.9159604519774012,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_05.sv",
+        "passed": true,
+        "reward": 0.9159604519774012,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_06.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_07.sv",
+        "passed": true,
+        "reward": 0.9159604519774012,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_08.sv",
+        "passed": true,
+        "reward": 0.9159604519774012,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_09.sv",
+        "passed": true,
+        "reward": 0.9159604519774012,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_10.sv",
+        "passed": true,
+        "reward": 0.9159604519774012,
+        "stage": "done"
+      }
+    ],
+    "n": 10,
+    "c": 9,
+    "pass_at_1": 0.9,
+    "pass_at_k_full": 1.0
+  },
+  "Prob082_lfsr32": {
+    "samples": [
+      {
+        "sample": "sample_01.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_02.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_03.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_04.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_05.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_06.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_07.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_08.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_09.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_10.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      }
+    ],
+    "n": 10,
+    "c": 6,
+    "pass_at_1": 0.6,
+    "pass_at_k_full": 1.0
+  },
+  "Prob079_fsm3onehot": {
+    "samples": [
+      {
+        "sample": "sample_01.sv",
+        "passed": true,
+        "reward": 0.8333333333333334,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_02.sv",
+        "passed": true,
+        "reward": 0.8333333333333334,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_03.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_04.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_05.sv",
+        "passed": true,
+        "reward": 0.8333333333333334,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_06.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_07.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_08.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_09.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_10.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      }
+    ],
+    "n": 10,
+    "c": 5,
+    "pass_at_1": 0.5,
+    "pass_at_k_full": 1.0
+  },
+  "Prob109_fsm1": {
+    "samples": [
+      {
+        "sample": "sample_01.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_02.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_03.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_04.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_05.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_06.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_07.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_08.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_09.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_10.sv",
+        "passed": true,
+        "reward": 1.0,
+        "stage": "done"
+      }
+    ],
+    "n": 10,
+    "c": 5,
+    "pass_at_1": 0.5,
+    "pass_at_k_full": 1.0
+  },
+  "Prob128_fsm_ps2": {
+    "samples": [
+      {
+        "sample": "sample_01.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_02.sv",
+        "passed": true,
+        "reward": 1.152777777777778,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_03.sv",
+        "passed": true,
+        "reward": 1.152777777777778,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_04.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_05.sv",
+        "passed": true,
+        "reward": 1.0416666666666667,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_06.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      },
+      {
+        "sample": "sample_07.sv",
+        "passed": true,
+        "reward": 1.152777777777778,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_08.sv",
+        "passed": true,
+        "reward": 1.152777777777778,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_09.sv",
+        "passed": true,
+        "reward": 1.152777777777778,
+        "stage": "done"
+      },
+      {
+        "sample": "sample_10.sv",
+        "passed": false,
+        "reward": 0.0,
+        "stage": "simulate"
+      }
+    ],
+    "n": 10,
+    "c": 6,
+    "pass_at_1": 0.6,
+    "pass_at_k_full": 1.0
+  }
+}
