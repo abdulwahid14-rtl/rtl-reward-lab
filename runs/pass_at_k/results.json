@@ -69,6 +69,17 @@
         "stage": "policy"
       }
     },
+    "hierarchical_sibling_reference.sv": {
+      "before": {
+        "functional_pass": true,
+        "reward": 2.0
+      },
+      "after": {
+        "functional_pass": false,
+        "reward": 0.0,
+        "stage": "netlist_simulate"
+      }
+    },
     "ifdef_synthesis_differential.sv": {
       "before": {
         "functional_pass": true,

@@ -66,6 +66,26 @@ def test_ifdef_synthesis_differential_is_rejected_at_policy_stage(work_dir, adve
     assert result.simulate_result is None
 
 
+def test_hierarchical_sibling_reference_is_rejected_at_netlist_stage(work_dir, adversarial_dir):
+    # Found by an independent red-team pass: the testbench instantiates
+    # the reference as `good1`, which Icarus's upward name resolution lets
+    # a candidate alias directly (`assign out = good1.out;`) without ever
+    # matching policy.py's `tb.`/`$root` hierarchical-reference regex.
+    # Passes policy and behavioral simulate (it IS the reference's
+    # output); synthesize.py reads the candidate alone, where `good1`
+    # doesn't exist, so Yosys ties the output to constant X, and the
+    # netlist re-simulation stage -- not the policy regex -- is what
+    # actually catches it.
+    shutil.copy(adversarial_dir / "hierarchical_sibling_reference.sv", work_dir / "candidate.sv")
+
+    result = evaluate("candidate.sv", "reference.sv", "official_test.sv", cwd=work_dir)
+
+    assert not result.passed
+    assert result.policy_result.allowed
+    assert result.simulate_result.passed
+    assert result.stage == "netlist_simulate"
+
+
 def test_formal_check_does_not_gate_a_correct_sequential_candidate(fir_work_dir):
     # pulse_shaping_fir has internal registers, so the combinational SAT
     # equivalence check is unsound for it (see evaluator.py docstring) and

@@ -29,20 +29,39 @@ testbench as the sole source of simulation output and pass/fail signal
 (`simulate.py` requires its report line to appear *exactly once*), and
 re-simulates the candidate's **actual synthesized netlist** — not just its
 source — against that same testbench before rewarding it. None of this is
-theoretical: two confirmed exploits were found and closed this way. One
-printed the testbench's own "0 mismatches" line itself via `$display`,
-scoring `1.90` on a functionally wrong module. The other presented correct
-behavior to the simulator and a trivially wrong, empty design to the
-synthesizer via an `` `ifdef SYNTHESIS `` guard (Yosys defines `SYNTHESIS`
-by default; Icarus Verilog does not), scoring the maximum possible reward
-of `2.0`, completely silently. See
-[docs/reward-design.md](docs/reward-design.md#threat-model-evaluator-manipulation-reward-hacking)
-for both writeups, the fixes, and `examples/adversarial/` for the probes.
+theoretical: **three confirmed exploits** were found and closed this way:
+
+1. Printed the testbench's own "0 mismatches" line itself via `$display`,
+   scoring `1.90` on a functionally wrong module.
+2. Presented correct behavior to the simulator and a trivially wrong,
+   empty design to the synthesizer via an `` `ifdef SYNTHESIS `` guard
+   (Yosys defines `SYNTHESIS` by default; Icarus Verilog does not),
+   scoring the maximum possible reward of `2.0`, completely silently.
+3. Found independently by a red-teaming pass (see below): aliased the
+   trusted testbench's own reference-instance output directly
+   (`assign out = good1.out;`), which also scored a silent `2.0` and
+   matched none of the policy regexes — closed entirely by the netlist
+   re-simulation gate, not by policy.
+
+See [docs/reward-design.md](docs/reward-design.md#threat-model-evaluator-manipulation-reward-hacking)
+for all three writeups, the fixes, and `examples/adversarial/` for the
+probes.
 
 A SAT-based formal equivalence check (`formal.py`) also runs on every
 passing candidate, but as a non-gating diagnostic only — it's exact for
 combinational designs but produces false negatives for sequential ones
 (explained in the doc above), so it's recorded, not enforced.
+
+### Red-teaming the evaluator
+
+Separately from generating candidates, four independent model instances
+were each given the full pipeline source and asked to find a way to
+score a high reward without actually solving the task (barred from this
+repo's own docs/examples, to make it a fair test). Three came back with
+negative results and real analysis; one found exploit #3 above. Full
+writeup, including the negative results (a timing/X-propagation angle
+and a resource-limit angle) and one real-but-narrow reward-formula
+quirk, in [docs/reward-design.md](docs/reward-design.md#red-team-an-llm-attacking-its-own-evaluator).
 
 ## How to run
 
@@ -81,46 +100,56 @@ via `rtl_reward_lab.tasks.load_tasks()`. There are currently two:
   its own reference, candidate, and testbench under
   [examples/correct/pulse_shaping_fir/](examples/correct/pulse_shaping_fir/).
 
-To reproduce the sanity-check and reward-hacking experiments below:
+To reproduce the real pass@k study, the sanity-check experiments, and the
+reward-hacking before/after table:
 
 ```bash
-python3 scripts/run_experiments.py
+python3 scripts/run_real_pass_at_k.py   # evaluates runs/real_pass_at_k/samples/
+python3 scripts/run_experiments.py      # sanity checks + reward-hacking table
 ```
-
-This writes [runs/pass_at_k/results.json](runs/pass_at_k/results.json) and
-prints the same tables shown below.
 
 ## Results
 
 Full writeup in [docs/reward-design.md](docs/reward-design.md#results).
 
+### Real pass@k
+
+200 independent, single-shot, tool-free samples (10 per task × 20
+VerilogEval tasks), each from a fresh model instance seeing only that
+task's prompt — no tools, no reference, no visibility into other
+samples. Evaluated through the real pipeline; pass@1 uses the
+Chen et al. (2021) unbiased estimator.
+
+**Mean pass@1: 0.840** (168/200 passed) — 100% on trivial combinational
+gates, 90% on simple sequential tasks, down to 50–60% on the three
+hardest FSM tasks, and a striking 0/10 on one task (`dff8`) for a
+genuine, consistent testbench-strictness reason rather than a capability
+gap. Full per-task table and both findings this run surfaced (the
+`dff8` testbench quirk, and an output-limit pipeline bug that was
+briefly corrupting two other tasks' numbers) in
+[docs/reward-design.md](docs/reward-design.md#real-passk).
+
 ### Pipeline sanity checks (not a pass@k estimate)
 
-A handful of hand-written attempts per task, not samples from a real
-model — see [docs/reward-design.md](docs/reward-design.md#pipeline-sanity-checks-not-a-passk-estimate)
-for why this is deliberately not called pass@k, and what a real pass@k
-study here would need.
+Superseded by the real study above; kept for continuity. A handful of
+hand-written attempts per task, not samples from a real model.
 
 | task | attempts | fraction passed | any passed | per-attempt reward |
 | --- | --- | --- | --- | --- |
 | popcount3 | 3 | 0.67 | True | 1.00, 1.07, 0.00 |
 | pulse_shaping_fir | 4 | 0.75 | True | 0.99, 1.01, 0.00, 0.96 |
 
-Each task includes a deliberately plausible-but-wrong attempt, confirming
-the pipeline actually fails bad candidates. `pulse_shaping_fir`'s fourth
-attempt was written from the task's text prompt alone, without looking at
-the reference or the other hand-written candidate.
-
 ### Reward hacking: before vs. after defenses
 
 | adversarial file | reward before | reward after | stage (after) |
 | --- | --- | --- | --- |
 | forged_pass_line.sv | 1.90 | 0.00 | policy |
+| hierarchical_sibling_reference.sv | 2.00 | 0.00 | netlist_simulate |
 | ifdef_synthesis_differential.sv | 2.00 | 0.00 | policy |
 | system_call.sv | 0.00 | 0.00 | policy |
 
-Both `forged_pass_line.sv` and `ifdef_synthesis_differential.sv` are
-confirmed exploits (see Threat model above).
+All three non-`system_call` rows are confirmed exploits (see Threat
+model above).
 
 ## Project layout
 
@@ -132,7 +161,7 @@ examples/correct/     reference designs + hand-written candidates
 examples/adversarial/ evaluator-manipulation probes
 third_party/           fetched via scripts/setup_verilog_eval.sh, not committed
 provenance/            pinned upstream commit hashes
-runs/                  experiment outputs (sanity checks, reward-hacking before/after)
+runs/                  experiment outputs (real pass@k, sanity checks, reward-hacking before/after)
 docs/                  reward design writeup
 tests/                 pytest suite
 ```
@@ -143,13 +172,19 @@ tests/                 pytest suite
   to temporal induction (Yosys `equiv_induct`) or bounded model checking so
   formal verification can gate sequential designs instead of being
   diagnostic-only.
-- **A real pass@k study** — sample 10–20 attempts per task from an actual
-  model across 20+ VerilogEval problems and report the Chen et al. (2021)
-  unbiased estimator, instead of today's hand-written sanity checks.
 - **Parser-based policy enforcement** — replace the regex denylist in
   `policy.py` with an AST-based allowlist (e.g. via `pyslang` or
   Verilator's lint output), which a determined macro-based or
-  comment/string-confusing candidate could in principle evade.
+  comment/string-confusing candidate could in principle evade (and which
+  would also close the bare-sibling-instance-reference gap the red-team
+  found, already closed in practice by netlist re-simulation).
+- **Distinguish resource-limit kills from real failures** — a
+  `SIGXFSZ`/`SIGKILL`-terminated run currently looks identical to a
+  genuine mismatch, which already caused one real pipeline bug to hide
+  behind a suspicious 0% pass rate until investigated.
+- **A wider pass@k study** — the real study here used n=10 samples
+  across 20 tasks; scaling to n=20 and/or a second model would sharpen
+  the estimate.
 - **Multi-step episodes** — let the policy see evaluator feedback (failing
   stage, policy violation, mismatch count) and resubmit within an episode,
   rather than one-shot `step()`.
