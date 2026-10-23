@@ -51,3 +51,26 @@ def test_step_with_system_call_candidate_is_rejected_and_scores_zero():
     assert result.reward == 0.0
     assert result.info["stage"] == "policy"
     assert any("$system" in v for v in result.info["policy_violations"])
+
+
+def test_step_with_ifdef_synthesis_differential_is_rejected_and_scores_zero():
+    # Confirmed exploit: before policy.py banned preprocessor conditionals,
+    # this scored a full 2.0 -- correct behavior in simulation (Icarus
+    # doesn't define SYNTHESIS), a trivially small, wrong design at
+    # synthesis time (Yosys does define it by default).
+    env = RTLRewardEnv(_popcount3_task())
+    adversarial_source = (
+        "module TopModule(input [2:0] in, output [1:0] out);\n"
+        "`ifdef SYNTHESIS\n"
+        "  assign out = 2'b00;\n"
+        "`else\n"
+        "  assign out = in[0] + in[1] + in[2];\n"
+        "`endif\n"
+        "endmodule\n"
+    )
+
+    result = env.step(adversarial_source)
+
+    assert not result.passed
+    assert result.reward == 0.0
+    assert result.info["stage"] == "policy"

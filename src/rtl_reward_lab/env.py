@@ -66,7 +66,7 @@ class RTLRewardEnv:
                     info=info,
                 )
 
-            candidate_synth = synthesize(candidate_path, top_module="TopModule", cwd=tmp_path)
+            candidate_synth = eval_result.candidate_synth_result
             reference_synth = synthesize(
                 self._task.reference_path, top_module="RefModule", cwd=tmp_path
             )

@@ -2,10 +2,16 @@
 
 Two experiments:
 
-1. pass@k: for each task, run each blind attempt under
-   runs/pass_at_k/attempts/<task_id>/attempt_*.sv through RTLRewardEnv.step()
-   and record whether it passed and what reward it got. pass@k is True if
-   any attempt for that task passed.
+1. Pipeline sanity checks: for each task, run each hand-written attempt
+   under runs/pass_at_k/attempts/<task_id>/attempt_*.sv through
+   RTLRewardEnv.step() and record whether it passed and what reward it
+   got. This is deliberately NOT called "pass@k": that term names a
+   specific estimator (Chen et al. 2021) over many independent samples
+   drawn from a real model at some temperature, which is not what a
+   handful of hand-written attempts -- one of them wrong on purpose --
+   produces. What this does check: does the pipeline actually distinguish
+   correct from incorrect submissions, and does an attempt built strictly
+   from the task's spec (not the reference implementation) still pass.
 
 2. Reward hacking before/after: for each file in examples/adversarial/,
    compute the reward it would have gotten from the pipeline as it existed
@@ -40,7 +46,11 @@ ADVERSARIAL_DIR = REPO_ROOT / "examples" / "adversarial"
 _OLD_MISMATCH_RE = re.compile(r"Total mismatched samples is (\d+) out of (\d+) samples")
 
 
-def run_pass_at_k() -> dict:
+def run_sanity_checks() -> dict:
+    """Not pass@k (see module docstring): run each hand-written attempt per
+    task and report the raw pass/fail + reward per attempt, plus the
+    fraction that passed and whether any did."""
+
     results = {}
     for task in load_tasks():
         attempt_dir = ATTEMPTS_ROOT / task.id
@@ -58,10 +68,11 @@ def run_pass_at_k() -> dict:
                     "stage": step_result.info["stage"],
                 }
             )
+        passed_count = sum(1 for a in attempts if a["passed"])
         results[task.id] = {
             "attempts": attempts,
-            "pass_at_1": attempts[0]["passed"] if attempts else None,
-            "pass_at_k": any(a["passed"] for a in attempts),
+            "fraction_passed": passed_count / len(attempts) if attempts else None,
+            "any_passed": any(a["passed"] for a in attempts),
             "k": len(attempts),
         }
     return results
@@ -117,9 +128,18 @@ def run_reward_hacking_before_after() -> dict:
             candidate_path = tmp_path / "candidate.sv"
             candidate_path.write_text(adversarial_path.read_text())
             after_eval = evaluate(candidate_path, task.reference_path, task.test_path, cwd=tmp_path)
+            if after_eval.passed:
+                reference_synth = synthesize(task.reference_path, top_module="RefModule", cwd=tmp_path)
+                after_reward = compute_reward(
+                    functional_pass=True,
+                    candidate_metrics=after_eval.candidate_synth_result.metrics,
+                    reference_metrics=reference_synth.metrics,
+                )
+            else:
+                after_reward = compute_reward(functional_pass=False)
             after = {
                 "functional_pass": after_eval.passed,
-                "reward": compute_reward(functional_pass=False) if not after_eval.passed else None,
+                "reward": after_reward,
                 "stage": after_eval.stage,
             }
 
@@ -128,18 +148,21 @@ def run_reward_hacking_before_after() -> dict:
 
 
 def main() -> None:
-    pass_at_k = run_pass_at_k()
+    sanity_checks = run_sanity_checks()
     hacking = run_reward_hacking_before_after()
 
     out_path = REPO_ROOT / "runs" / "pass_at_k" / "results.json"
-    out_path.write_text(json.dumps({"pass_at_k": pass_at_k, "reward_hacking": hacking}, indent=2))
+    out_path.write_text(json.dumps({"sanity_checks": sanity_checks, "reward_hacking": hacking}, indent=2))
 
-    print("## pass@k\n")
-    print("| task | k | pass@1 | pass@k | per-attempt reward |")
+    print("## pipeline sanity checks (hand-written attempts, not a pass@k estimate)\n")
+    print("| task | attempts | fraction passed | any passed | per-attempt reward |")
     print("| --- | --- | --- | --- | --- |")
-    for task_id, data in pass_at_k.items():
+    for task_id, data in sanity_checks.items():
         rewards = ", ".join(f"{a['reward']:.2f}" for a in data["attempts"])
-        print(f"| {task_id} | {data['k']} | {data['pass_at_1']} | {data['pass_at_k']} | {rewards} |")
+        print(
+            f"| {task_id} | {data['k']} | {data['fraction_passed']:.2f} | "
+            f"{data['any_passed']} | {rewards} |"
+        )
 
     print("\n## reward hacking: before vs after defenses\n")
     print("| adversarial file | reward before | reward after | stage (after) |")

@@ -30,6 +30,7 @@ def simulate(
     *,
     cwd: str | Path,
     limits: RunLimits | None = None,
+    extra_sources: tuple[str | Path, ...] = (),
 ) -> SimulateResult:
     """Compile candidate, reference, and the official test with Icarus Verilog,
     then run the simulation and decide pass/fail from the testbench's own
@@ -38,6 +39,12 @@ def simulate(
     The testbench (not this function) is the source of truth: it must finish
     and report "Total mismatched samples is 0 out of N samples" for the run
     to be considered passing.
+
+    `extra_sources` are additional files compiled alongside the three main
+    ones, unchanged otherwise. evaluator.py uses this to re-simulate a
+    Yosys-written gate-level netlist (as `candidate_path`) together with
+    Yosys's `simcells.v` behavioral models, so that the design actually
+    synthesized is also the one functionally checked.
     """
 
     compiled_vvp = "simulation.vvp"
@@ -52,6 +59,7 @@ def simulate(
             str(candidate_path),
             str(reference_path),
             str(test_path),
+            *(str(p) for p in extra_sources),
         ],
         cwd=cwd,
         limits=limits,
