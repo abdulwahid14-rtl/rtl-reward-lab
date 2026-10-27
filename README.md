@@ -108,8 +108,18 @@ via `rtl_reward_lab.tasks.load_tasks()`. There are currently two:
 To reproduce the pass@k study and the exploit table above:
 
 ```bash
-python3 scripts/run_real_pass_at_k.py   # evaluates runs/real_pass_at_k/samples/
+python3 scripts/run_real_pass_at_k.py   # scores the committed samples in runs/real_pass_at_k/
 python3 scripts/run_experiments.py      # reward-hacking before/after table
+```
+
+To generate a fresh, fully logged sample set through the Anthropic API
+(needs an API key; see
+[`GENERATION.md`](runs/real_pass_at_k/GENERATION.md#a-reproducible-version-of-this-study)):
+
+```bash
+pip install -e '.[generate]'
+python3 scripts/generate_pass_at_k.py --model claude-opus-5-5
+python3 scripts/run_real_pass_at_k.py --run-dir runs/pass_at_k_api/claude-opus-5-5
 ```
 
 ## Results

@@ -30,8 +30,11 @@ per task × 20 tasks in 10 "rounds" (one round = 20 parallel calls, one
 per task), round-robin across tasks rather than 20 sequential calls for
 one task at a time.
 
-The exact prompt template I used for every sample (task prompt text
-substituted in, otherwise byte-identical across all 200 calls):
+The prompt template I used (task prompt text substituted in). 199 of the
+200 calls used exactly this wording; the very first one (`Prob003_step_one`
+sample 1) used an earlier draft whose first sentence also said "no
+markdown fences needed (but fine if you include them)". Each sub-agent
+also runs under Claude Code's own system prompt, which I don't control:
 
 ```
 You are implementing a single Verilog module from a spec, for a
@@ -77,6 +80,13 @@ this exact study, or comparing it to a pass@k number from a different
 setup, would need a direct API-based generation script instead of this
 tool-based approach.
 
+One correction to how I first framed this: even through the API, current
+Claude models no longer accept `temperature`, `top_p` or `top_k` at all —
+only the API's default sampling. So the gap isn't "I couldn't log the
+temperature I used"; it's that nobody can choose one for these models.
+What the sub-agent route actually loses is the log: which exact model
+served each sample, its request ID, stop reason, and token usage.
+
 ## How I kept the samples independent
 
 - Each sample is a separate `Agent` call with `subagent_type:
@@ -91,14 +101,26 @@ tool-based approach.
   back-to-back, so there's no structural reason for within-task samples
   to be more similar to each other than to samples from other rounds.
 
-## A more reproducible version of this study
+## A reproducible version of this study
 
-The cleanest fix for the two limitations above (uncharacterized
-sampling, and "whichever model Claude Code defaults to" rather than a
-model I chose deliberately for a comparison) would be to replace this
-`Agent`-tool generation step with a short, direct script against the
-Anthropic Messages API (or another provider's), explicitly passing
-`model` and `temperature` and logging both alongside the raw completions.
-The evaluation side (`scripts/run_real_pass_at_k.py`) wouldn't need to
-change either way — it just reads whatever is in
-`runs/real_pass_at_k/samples/`.
+`scripts/generate_pass_at_k.py` replaces the sub-agent step with direct
+Anthropic API calls. It uses the same 20 tasks and the same prompt
+template (both live in `rtl_reward_lab.passk`, shared with the evaluator),
+sent as the only message with no system prompt,
+lets me pick the model explicitly, and logs everything the sub-agent run
+couldn't: a `run_config.json` with the shared settings (model, effort,
+`max_tokens`, no tools, no sampling parameters, refusal fallbacks
+disabled so no sample is served by a different model), and one
+`generation_log.jsonl` line per sample with the model that actually
+served it, the request ID, stop reason, token usage, a hash of the
+prompt, and the raw response text.
+
+```bash
+pip install -e '.[generate]'
+python3 scripts/generate_pass_at_k.py --model claude-opus-5-5
+python3 scripts/run_real_pass_at_k.py --run-dir runs/pass_at_k_api/claude-opus-5-5
+```
+
+Passing `--model claude-sonnet-5` reruns this study's model through the
+logged path, which shows how much the sub-agent harness itself moved the
+numbers.
