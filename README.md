@@ -8,6 +8,23 @@ against candidates that try to manipulate the evaluator itself rather than
 solve the task. It is an RL-style environment (`reset()`/`step()`), not an
 RL-trained model.
 
+## How this was built
+
+I designed this project: the reward structure (functional correctness
+gates a relative cell-count/depth reward), the threat model (the
+evaluator itself is part of the attack surface), and the task set, and I
+directed the implementation using [Claude Code](https://claude.com/claude-code)
+(Anthropic's CLI agent) as my pair-programmer. Claude Code wrote the
+pipeline implementation, generated the real-pass@k samples, ran the
+red-team exercise against its own evaluator, and investigated each
+finding below. I incorporated external code-review feedback at a few
+points (that's where the pass@k mislabeling and the dff8 root-cause
+questions came from), had Claude Code chase each one down against the
+real pipeline and the pinned upstream VerilogEval commit, and reviewed
+and verified the results before writing them up here and pushing. Commits
+carry `Co-Authored-By: Claude` trailers throughout, honestly — this
+wasn't written solo.
+
 ## Why functional correctness gates the reward
 
 A naive reward of "smaller synthesized circuit = higher reward" is
