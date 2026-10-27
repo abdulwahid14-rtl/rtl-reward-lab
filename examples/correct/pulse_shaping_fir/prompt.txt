@@ -1,4 +1,4 @@
-Implement a 4-tap-per-phase, 4x-interpolating polyphase FIR filter named
+Implement a 8-tap-per-phase, 4x-interpolating polyphase FIR filter named
 TopModule, used as the pulse-shaping interpolator in a transmit path.
 
 Interface:
@@ -6,7 +6,7 @@ Interface:
   input         IwRst_n_500M     - asynchronous, active-low reset
   input         enb              - clock enable; when low, all internal
                                     state holds its value
-  input  signed [1:0]  IwPulseIn        - input sample, sfix2, restricted to the
+  input  signed [1:0]  IwPulseIn        - input sample, sfix2, restricted to the ternary
                                     values -1, 0 and +1 (-2 is never applied)
   input  signed [7:0]  IwCoeffsIn_0..31 - 32 filter coefficients, sfix8_En7
                                            (Q1.7 fixed point)
@@ -25,8 +25,7 @@ Behavior:
    of 8 taps each. Phase p (p = 0..3) uses coefficients
    IwCoeffsIn_{p}, IwCoeffsIn_{p+4}, IwCoeffsIn_{p+8}, ..., IwCoeffsIn_{p+28}
    paired respectively with delay taps 0..7. Each phase computes
-     sum_i taps[i] * coeffs[p + 4*i]   for i = 0..7
-   as an 11-bit signed accumulator (sfix11_En7), registered once per
+   its own FIR filter. registered once per
    enabled clock edge (reset to 0 on IwRst_n_500M low).
 
 3. Output saturation: each phase's 11-bit accumulator is cast down to
