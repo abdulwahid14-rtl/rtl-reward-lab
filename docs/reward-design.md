@@ -329,8 +329,8 @@ The real pass@k run above first showed `Prob068_countbcd` and
 `Prob082_lfsr32` at a flat, suspicious 0/10. Both tasks' trusted
 testbenches run for thousands of cycles and `$dumpvars` a VCD trace the
 whole time; for `countbcd`, a genuinely correct candidate's VCD trace is
-~1.2 MB. `RunLimits`' old default `max_output_bytes` (1 MiB,
-`runner.py`) silently killed `vvp` mid-dump with `SIGXFSZ` — a
+~1.2 MB. `RunLimits`' old default file-size cap (1 MiB,
+`runner.py`, now `max_file_bytes`) silently killed `vvp` mid-dump with `SIGXFSZ` — a
 process-killed failure that `simulate.py` reports exactly like a real
 functional mismatch (`stage="simulate"`, no distinguishing detail),
 so it was indistinguishable from "the model got it wrong" without
@@ -454,11 +454,13 @@ why both of those exist rather than relying on policy alone.
   genuine mismatch (see "An output-limit bug found while producing these
   results"). Surfacing the signal/kill reason would make this class of
   bug visible immediately instead of as a suspicious 0% rate.
-- **Bound piped stdout/stderr, not just file writes.** `RLIMIT_FSIZE`
+- **Bound piped stdout/stderr, not just file writes.** *Done.* `RLIMIT_FSIZE`
   doesn't constrain `subprocess.PIPE` output (confirmed by the red-team's
-  resource-limit-angle run); a candidate that floods compiler/elaborator
-  warnings could grow the parent process's buffered output without bound.
-  An availability concern, not a reward-hacking one, but worth capping.
+  resource-limit-angle run), so `run()` now reads both pipes incrementally
+  against one combined byte budget (`RunLimits.max_log_bytes`, 4 MiB) and
+  kills the process group on overflow, setting `RunResult.output_overflow`.
+  File limits (`max_file_bytes`, 16 MiB, for VCD/netlist/.vvp) are separate.
+  Peak combined log output across the 200 pass@k samples was ~175 KB.
 - **A wider, model-sampled pass@k study.** The real pass@k study here used
   n=10 samples across 20 tasks; scaling to n=20 and/or more tasks (and
   ideally a second model, for comparison) would sharpen the estimate.

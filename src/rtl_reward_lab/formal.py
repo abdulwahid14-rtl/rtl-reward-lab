@@ -47,6 +47,7 @@ def check_equivalence(
 
     equivalent = (
         not run_result.timed_out
+        and not run_result.output_overflow
         and run_result.returncode == 0
         and "SUCCESS" in run_result.stdout
     )

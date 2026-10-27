@@ -64,7 +64,7 @@ def simulate(
         cwd=cwd,
         limits=limits,
     )
-    if compile_result.timed_out or compile_result.returncode != 0:
+    if compile_result.timed_out or compile_result.output_overflow or compile_result.returncode != 0:
         return SimulateResult(
             passed=False,
             stage="compile",
@@ -75,7 +75,7 @@ def simulate(
         )
 
     simulate_result = run(["vvp", "-N", compiled_vvp], cwd=cwd, limits=limits)
-    if simulate_result.timed_out or simulate_result.returncode != 0:
+    if simulate_result.timed_out or simulate_result.output_overflow or simulate_result.returncode != 0:
         return SimulateResult(
             passed=False,
             stage="simulate",

@@ -85,7 +85,7 @@ def synthesize(
         script += f'; write_verilog -noattr "{netlist_path}"'
     run_result = run(["yosys", "-p", script], cwd=cwd, limits=limits)
 
-    if run_result.timed_out or run_result.returncode != 0:
+    if run_result.timed_out or run_result.output_overflow or run_result.returncode != 0:
         return SynthesizeResult(ok=False, metrics=None, run_result=run_result)
 
     cell_matches = _CELL_COUNT_RE.findall(run_result.stdout)
