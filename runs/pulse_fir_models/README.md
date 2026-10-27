@@ -1,17 +1,22 @@
-# pulse_shaping_fir: single-shot samples from three models
+# pulse_shaping_fir: single-shot samples from several models
 
-Nine samples written from `examples/correct/pulse_shaping_fir/prompt.txt`
+Thirteen samples written from `examples/correct/pulse_shaping_fir/prompt.txt`
 alone, scored with the full pipeline against `reference.sv` (3063 cells,
 logic depth 31).
 
 ## How they were generated
 
-Each sample is one Claude Code sub-agent call with a model override
-(`haiku`, `sonnet`, `opus`), on 2026-10-27. The agent saw only the prompt
-text inside the same wrapper used for `runs/real_pass_at_k/` ("respond with
-only the code, no tools"). It saw no reference, testbench or other sample.
-Sampling settings and request IDs are not logged (see
-`runs/real_pass_at_k/GENERATION.md` for why).
+- **Claude (`haiku/`, `sonnet/`, `opus/`):** one Claude Code sub-agent call per
+  sample with a model override, on 2026-10-27. Sampling settings and request
+  IDs are not logged (see `runs/real_pass_at_k/GENERATION.md` for why).
+- **OpenAI GPT-6 (`openai_*/`):** `scripts/generate_openrouter.py` through
+  OpenRouter, one request per sample, default sampling. Each directory has a
+  `generation_log.jsonl` with the served model, request id, finish reason,
+  token usage and raw response.
+
+Both routes use the same prompt wrapper ("respond with only the code, no
+tools") around the prompt text. No sample saw the reference, the testbench or
+any other sample.
 
 Two `fable` samples were attempted and failed before producing code (the
 account needs usage credits for that model), so there are no Fable results.
@@ -31,12 +36,19 @@ reference in view, so it was not a fair comparison.
 | opus | 01 | yes | 3990 | 44 | +30% |
 | opus | 02 | yes | 3673 | 41 | +20% |
 | opus | 03 | yes | 3676 | 41 | +20% |
+| gpt-6-luna | 01 | yes | 3768 | 54 | +23% |
+| gpt-6.1-terra | 01 | yes | 3558 | 37 | +16% |
+| gpt-6.1-sol | 01 | yes | 3866 | 54 | +26% |
+| gpt-6-astra | 01 | yes | 3866 | 54 | +26% |
 
 `haiku/sample_03.sv` is kept as generated: it ends the module with `}`
 instead of `endmodule` and drives `OwSampleOut_2` from `acc[1]`.
 
-Eight of nine pass, and none is smaller than the reference. All eight
-passing samples use a generic `tap * coeff` multiply, so none uses the
-prompt's ternary-input restriction. Nine samples cannot rank the models:
-the two Opus runs differ from each other by more than the gap between
-Haiku and Sonnet.
+Twelve of thirteen pass, and none is smaller or shallower than the
+reference. Eleven of the twelve passing samples use a generic `tap * coeff`
+multiply. The exception is `gpt-6.1-terra`, which selects `+coeff`, `-coeff`
+or `0` from the sample bits, so it is the only one that uses the prompt's
+ternary-input restriction (and the smallest and shallowest of the passing
+samples). `gpt-6-astra` and `gpt-6.1-sol` produced the same cell count and
+depth and differ only in naming and formatting. With one to three samples per
+model, this cannot rank the models.
