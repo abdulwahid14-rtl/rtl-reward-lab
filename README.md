@@ -115,19 +115,26 @@ Full writeup in [docs/reward-design.md](docs/reward-design.md#results).
 ### Real pass@k
 
 200 independent, single-shot, tool-free samples (10 per task × 20
-VerilogEval tasks), each from a fresh model instance seeing only that
-task's prompt — no tools, no reference, no visibility into other
-samples. Evaluated through the real pipeline; pass@1 uses the
-Chen et al. (2021) unbiased estimator.
+VerilogEval tasks), each from a fresh Claude Sonnet 5 instance seeing
+only that task's prompt — no tools, no reference, no visibility into
+other samples. Evaluated through the real pipeline; pass@1 uses the
+Chen et al. (2021) unbiased estimator. Exact model, prompt template,
+and the real limitations of generating through an agent-tool call
+rather than a temperature-logged API call, in
+[`runs/real_pass_at_k/GENERATION.md`](runs/real_pass_at_k/GENERATION.md)
+— read that before citing these numbers anywhere.
 
-**Mean pass@1: 0.840** (168/200 passed) — 100% on trivial combinational
-gates, 90% on simple sequential tasks, down to 50–60% on the three
-hardest FSM tasks, and a striking 0/10 on one task (`dff8`) for a
-genuine, consistent testbench-strictness reason rather than a capability
-gap. Full per-task table and both findings this run surfaced (the
-`dff8` testbench quirk, and an output-limit pipeline bug that was
-briefly corrupting two other tasks' numbers) in
-[docs/reward-design.md](docs/reward-design.md#real-passk).
+**Mean pass@1: 0.840** (168/200 passed); **0.884** (168/190) excluding
+`Prob034_dff8`. 100% on trivial combinational gates, 90% on simple
+sequential tasks, down to 50–60% on the three hardest FSM tasks, and a
+striking, fully-explained 0/10 on `dff8`: its upstream reference
+initializes to a concrete `8'h0` that the prompt never asked for, so an
+otherwise-correct candidate's unavoidable startup `X` is flagged as a
+real mismatch — a benchmark defect, not a capability gap, and one with
+a real implication for training against this kind of reward (see
+"Real pass@k" in [docs/reward-design.md](docs/reward-design.md#real-passk)
+for why). This run also surfaced an output-limit pipeline bug that was
+briefly corrupting two other tasks' numbers, also written up there.
 
 ### Pipeline sanity checks (not a pass@k estimate)
 

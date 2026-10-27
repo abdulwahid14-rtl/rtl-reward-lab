@@ -200,23 +200,58 @@ k=1 it reduces to c/n, but the script implements the general formula).
 | Prob034_dff8 | 10 | 0 | 0.000 |
 
 **Mean pass@1 across the 20 tasks: 0.840** (168/200 samples passed).
+**Excluding `Prob034_dff8`** (see below — its 0/10 is a benchmark defect,
+not a capability signal): **0.884** (168/190).
+
+How these samples were actually produced — model, exact prompt template,
+what "independent" means here, and the real limitations of generating
+through an agent-tool call rather than a direct, temperature-logged API
+call — is in
+[`runs/real_pass_at_k/GENERATION.md`](../runs/real_pass_at_k/GENERATION.md).
+Read that before citing the 0.840/0.884 figures anywhere: in particular,
+the sampling temperature was not controllable or logged, so this is a
+real pass@1 over 10 independent draws, but not a fully characterized one
+in the sense Chen et al. (2021) normally report.
 
 Two findings worth calling out specifically:
 
 - **`Prob034_dff8` scored 0/10, consistently, for the same reason every
-  time.** All 10 samples implement the obvious, textbook-correct 8-bit
-  register (`reg [7:0] q_reg; always @(posedge clk) q_reg <= d; assign
-  q = q_reg;`, or equivalent), and all 10 fail with exactly one mismatch
-  at the very first sampled time step. The reference design apparently
-  initializes (or the testbench's first comparison lands before any
-  implicit-reg's first clock edge in a way the reference happens to
-  satisfy and a plain, uninitialized `reg` does not) — either way, this
-  is a property of this specific upstream task's testbench, not a
-  reflection of "0% of models can build a register bank." A model would
-  need to know this testbench's specific strictness to score here, which
-  arguably isn't a capability worth selecting for. Flagged as a caveat
-  on this benchmark, not fixed (the testbench is upstream, trusted,
-  unmodified data).
+  time — confirmed by reading the pinned VerilogEval commit directly, not
+  inferred.** All 10 samples implement the obvious, textbook-correct
+  8-bit register (`reg [7:0] q_reg; always @(posedge clk) q_reg <= d;
+  assign q = q_reg;`, or equivalent) and all 10 fail with exactly one
+  mismatch at the very first sampled time step. The cause: `dff8`'s
+  reference (`Prob034_dff8_ref.sv`) contains `initial q = 8'h0;`, but the
+  task prompt says nothing about a reset or an initial value, and a
+  register with no explicit initialization starts at `X` in simulation.
+  The trusted testbench's comparison (`tb_match = (q_ref === (q_ref ^
+  q_dut ^ q_ref))`) only tolerates a mismatch when **the reference side**
+  is `X`; here the reference is a concrete `0`, so a candidate `X` at
+  time 0 is flagged as a real mismatch. This is a genuine mismatch
+  between what the prompt specifies and what the reference actually does
+  — a defect in this specific upstream benchmark task, not a capability
+  gap. (`Prob031_dff`'s reference, by contrast, uses `initial q = 1'hx;`
+  — matching *that* reference's `X` is unconditional regardless of the
+  candidate's own value, which is exactly why 9/10 `dff` samples pass
+  despite the same "no explicit initial value" style; the one `dff`
+  failure is an unrelated genuine syntax bug — one sample re-declared the
+  output port as both a net and a `reg`.)
+
+  **This matters beyond this one task's score.** If this reward were
+  used to actually train a model (the stated motivation for this whole
+  project), the model would learn, correctly, that adding an `initial`
+  block matching the reference's arbitrary startup value raises reward on
+  tasks like this — even though the prompt never asked for one, and even
+  though `initial` blocks on flip-flops are a simulation-only convenience
+  that most ASIC synthesis flows do not support (real silicon has no
+  defined power-on state without explicit reset logic). A reward with
+  this kind of testbench-specific gap doesn't just mis-score one task; it
+  would actively teach a bad hardware habit if optimized against at
+  scale. Flagged here as a caveat on this benchmark and on reward-design
+  generally, not fixed (the testbench is upstream, trusted, unmodified
+  data) — but it's the single most important finding in this results
+  section for anyone thinking about training against this kind of
+  reward, not just a quirky one-task footnote.
 - **This run is also what surfaced the output-limit bug below** — the
   first version of these numbers showed `Prob068_countbcd` and
   `Prob082_lfsr32` at a suspicious flat 0/10, which turned out to be a
