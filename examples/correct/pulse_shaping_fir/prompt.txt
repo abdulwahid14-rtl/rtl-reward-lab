@@ -6,7 +6,8 @@ Interface:
   input         IwRst_n_500M     - asynchronous, active-low reset
   input         enb              - clock enable; when low, all internal
                                     state holds its value
-  input  signed [1:0]  IwPulseIn        - input sample, sfix2 (values -2..1)
+  input  signed [1:0]  IwPulseIn        - input sample, sfix2, restricted to the
+                                    values -1, 0 and +1 (-2 is never applied)
   input  signed [7:0]  IwCoeffsIn_0..31 - 32 filter coefficients, sfix8_En7
                                            (Q1.7 fixed point)
   output signed [7:0]  OwSampleOut_0..3 - the 4 interpolated output phases

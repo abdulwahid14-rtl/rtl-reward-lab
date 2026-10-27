@@ -155,7 +155,8 @@ module tb;
 
     for (i = 0; i < NUM_SAMPLES; i = i + 1) begin
       @(negedge IwClk_500M);
-      IwPulseIn = $random;
+      // Ternary input: -1, 0 or +1 only (2'b10 / -2 is never driven).
+      IwPulseIn = ($random & 32'h7fffffff) % 3 - 1;
       enb       = (($random % 10) != 0);
 
       if (cand_out0 !== ref_out0 || cand_out1 !== ref_out1 ||

@@ -352,14 +352,14 @@ module sca_vbond_tx_Polyphase_FIR0 (
 );
 
   wire signed [10:0] sum =
-      IwPulseIn_Delay0 * IwCoeffsIn_0 +
-      IwPulseIn_Delay1 * IwCoeffsIn_1 +
-      IwPulseIn_Delay2 * IwCoeffsIn_2 +
-      IwPulseIn_Delay3 * IwCoeffsIn_3 +
-      IwPulseIn_Delay4 * IwCoeffsIn_4 +
-      IwPulseIn_Delay5 * IwCoeffsIn_5 +
-      IwPulseIn_Delay6 * IwCoeffsIn_6 +
-      IwPulseIn_Delay7 * IwCoeffsIn_7;
+      (IwPulseIn_Delay0 == 2'b00 ? 8'sd0 : (IwPulseIn_Delay0 == 2'b01 ? IwCoeffsIn_0 : -IwCoeffsIn_0)) +
+      (IwPulseIn_Delay1 == 2'b00 ? 8'sd0 : (IwPulseIn_Delay1 == 2'b01 ? IwCoeffsIn_1 : -IwCoeffsIn_1)) +
+      (IwPulseIn_Delay2 == 2'b00 ? 8'sd0 : (IwPulseIn_Delay2 == 2'b01 ? IwCoeffsIn_2 : -IwCoeffsIn_2)) +
+      (IwPulseIn_Delay3 == 2'b00 ? 8'sd0 : (IwPulseIn_Delay3 == 2'b01 ? IwCoeffsIn_3 : -IwCoeffsIn_3)) +
+      (IwPulseIn_Delay4 == 2'b00 ? 8'sd0 : (IwPulseIn_Delay4 == 2'b01 ? IwCoeffsIn_4 : -IwCoeffsIn_4)) +
+      (IwPulseIn_Delay5 == 2'b00 ? 8'sd0 : (IwPulseIn_Delay5 == 2'b01 ? IwCoeffsIn_5 : -IwCoeffsIn_5)) +
+      (IwPulseIn_Delay6 == 2'b00 ? 8'sd0 : (IwPulseIn_Delay6 == 2'b01 ? IwCoeffsIn_6 : -IwCoeffsIn_6)) +
+      (IwPulseIn_Delay7 == 2'b00 ? 8'sd0 : (IwPulseIn_Delay7 == 2'b01 ? IwCoeffsIn_7 : -IwCoeffsIn_7));
 
   reg signed [10:0] sum_reg;
 
