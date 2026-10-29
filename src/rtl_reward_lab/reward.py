@@ -11,6 +11,9 @@ class SynthesisMetrics:
 
     cell_count: int
     logic_depth: int
+    # Library area, only for flows that map to a Liberty cell library. Reported,
+    # not (yet) part of the reward.
+    area: float | None = None
 
 
 def reward(

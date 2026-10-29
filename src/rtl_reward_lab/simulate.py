@@ -7,6 +7,7 @@ import re
 from pathlib import Path
 
 from rtl_reward_lab.runner import RunLimits, RunResult, run
+from rtl_reward_lab.tools import DEFAULT_SIMULATOR, get_simulator
 
 _MISMATCH_RE = re.compile(r"Total mismatched samples is (\d+) out of (\d+) samples")
 
@@ -31,9 +32,11 @@ def simulate(
     cwd: str | Path,
     limits: RunLimits | None = None,
     extra_sources: tuple[str | Path, ...] = (),
+    simulator: str = DEFAULT_SIMULATOR,
 ) -> SimulateResult:
-    """Compile candidate, reference, and the official test with Icarus Verilog,
-    then run the simulation and decide pass/fail from the testbench's own
+    """Compile candidate, reference, and the official test with the chosen
+    simulator (Icarus Verilog by default, or Verilator; see tools.py), then
+    run the simulation and decide pass/fail from the testbench's own
     mismatch count.
 
     The testbench (not this function) is the source of truth: it must finish
@@ -47,23 +50,23 @@ def simulate(
     synthesized is also the one functionally checked.
     """
 
-    compiled_vvp = "simulation.vvp"
-    compile_result = run(
-        [
-            "iverilog",
-            "-g2012",
-            "-s",
-            "tb",
-            "-o",
-            compiled_vvp,
-            str(candidate_path),
-            str(reference_path),
-            str(test_path),
-            *(str(p) for p in extra_sources),
-        ],
-        cwd=cwd,
-        limits=limits,
-    )
+    backend = get_simulator(simulator)
+    sources = [str(candidate_path), str(reference_path), str(test_path), *(str(p) for p in extra_sources)]
+    compile_command, run_command = backend.build_commands(sources, "simulation.vvp")
+    backend.clean_build_dir(cwd)
+
+    # Verilator compiles the design to C++ and invokes g++, which needs far
+    # more address space and time than iverilog's bytecode compile; the
+    # simulation run itself stays under the caller's (or default) limits.
+    compile_limits = limits or RunLimits()
+    if backend.name == "verilator":
+        compile_limits = dataclasses.replace(
+            compile_limits,
+            timeout_seconds=max(compile_limits.timeout_seconds, 180.0),
+            cpu_seconds=max(compile_limits.cpu_seconds, 180),
+            memory_bytes=max(compile_limits.memory_bytes, 4 * 1024**3),
+        )
+    compile_result = run(compile_command, cwd=cwd, limits=compile_limits)
     if compile_result.timed_out or compile_result.output_overflow or compile_result.returncode != 0:
         return SimulateResult(
             passed=False,
@@ -74,7 +77,7 @@ def simulate(
             simulate_result=None,
         )
 
-    simulate_result = run(["vvp", "-N", compiled_vvp], cwd=cwd, limits=limits)
+    simulate_result = run(run_command, cwd=cwd, limits=limits)
     if simulate_result.timed_out or simulate_result.output_overflow or simulate_result.returncode != 0:
         return SimulateResult(
             passed=False,

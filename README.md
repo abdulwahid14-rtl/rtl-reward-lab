@@ -28,6 +28,7 @@ A sample study recorded 168 passing submissions out of 200 across 20 VerilogEval
 ## Run it
 
 Requires Python 3.10+, Git, Icarus Verilog (`iverilog`/`vvp`), and Yosys on `PATH`.
+Verilator 5+ (plus `make` and a C++ compiler) is optional and enables the second simulator below; the tests that need it skip without it.
 
 ```bash
 python3 -m venv .venv
@@ -44,6 +45,16 @@ Re-evaluate the committed samples and reproduce the reward-hacking experiments:
 python3 scripts/run_real_pass_at_k.py
 python3 scripts/run_experiments.py
 ```
+
+## Comparing tools
+
+The default pipeline is Icarus Verilog plus Yosys's generic `synth`. To see how much a result depends on those choices, `evaluate()` takes `simulator=` (`iverilog`, `verilator`) and `flow=` (`generic`, `ice40`, `ecp5`, `xilinx`), and `scripts/compare_tools.py` runs every combination over a sample set:
+
+```bash
+python3 scripts/compare_tools.py            # the committed 200 samples; writes runs/tool_comparison/
+```
+
+All flows are Yosys-driven, since it is the only mature open-source RTL synthesizer; they differ in the technology mapper (generic gates, 4-input LUTs, 6-input LUTs). A flow mapped to a Liberty cell library via ABC is also available and reports library area: set `RTL_REWARD_LIBERTY=/path/to/cells.lib` and use `flow="liberty"` in `synthesize()`. It has no behavioral cell models, so `evaluate()` refuses it rather than skip the netlist re-simulation gate. Results and caveats are in [reward-design.md](docs/reward-design.md#cross-tool-comparison).
 
 ## Limitations
 

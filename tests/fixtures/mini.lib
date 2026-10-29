@@ -1,0 +1,200 @@
+/* Minimal made-up standard-cell library for exercising the Liberty flow in
+   tests. Areas and delays are illustrative, not from any real process. */
+library(mini) {
+  delay_model : table_lookup;
+  time_unit : "1ns";
+  voltage_unit : "1V";
+  current_unit : "1mA";
+  pulling_resistance_unit : "1kohm";
+  capacitive_load_unit(1, pf);
+  nom_process : 1; nom_temperature : 25; nom_voltage : 1.0;
+  lu_table_template(tmpl) {
+    variable_1 : input_net_transition;
+    variable_2 : total_output_net_capacitance;
+    index_1("0.01, 0.5");
+    index_2("0.01, 0.1");
+  }
+  cell(INV) {
+    area : 1.0;
+    pin(A) { direction : input; capacitance : 0.01; }
+    pin(Y) {
+      direction : output;
+      function : "!A";
+      max_capacitance : 0.1;
+      timing() {
+        related_pin : "A";
+        cell_rise(tmpl) { values("0.050, 0.080", "0.100, 0.130"); }
+        cell_fall(tmpl) { values("0.050, 0.080", "0.100, 0.130"); }
+        rise_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+        fall_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+      }
+    }
+  }
+  cell(BUF) {
+    area : 1.5;
+    pin(A) { direction : input; capacitance : 0.01; }
+    pin(Y) {
+      direction : output;
+      function : "A";
+      max_capacitance : 0.1;
+      timing() {
+        related_pin : "A";
+        cell_rise(tmpl) { values("0.080, 0.110", "0.130, 0.160"); }
+        cell_fall(tmpl) { values("0.080, 0.110", "0.130, 0.160"); }
+        rise_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+        fall_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+      }
+    }
+  }
+  cell(NAND2) {
+    area : 2.0;
+    pin(A) { direction : input; capacitance : 0.01; }
+    pin(B) { direction : input; capacitance : 0.01; }
+    pin(Y) {
+      direction : output;
+      function : "!(A*B)";
+      max_capacitance : 0.1;
+      timing() {
+        related_pin : "A";
+        cell_rise(tmpl) { values("0.070, 0.100", "0.120, 0.150"); }
+        cell_fall(tmpl) { values("0.070, 0.100", "0.120, 0.150"); }
+        rise_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+        fall_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+      }
+      timing() {
+        related_pin : "B";
+        cell_rise(tmpl) { values("0.070, 0.100", "0.120, 0.150"); }
+        cell_fall(tmpl) { values("0.070, 0.100", "0.120, 0.150"); }
+        rise_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+        fall_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+      }
+    }
+  }
+  cell(NOR2) {
+    area : 2.0;
+    pin(A) { direction : input; capacitance : 0.01; }
+    pin(B) { direction : input; capacitance : 0.01; }
+    pin(Y) {
+      direction : output;
+      function : "!(A+B)";
+      max_capacitance : 0.1;
+      timing() {
+        related_pin : "A";
+        cell_rise(tmpl) { values("0.080, 0.110", "0.130, 0.160"); }
+        cell_fall(tmpl) { values("0.080, 0.110", "0.130, 0.160"); }
+        rise_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+        fall_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+      }
+      timing() {
+        related_pin : "B";
+        cell_rise(tmpl) { values("0.080, 0.110", "0.130, 0.160"); }
+        cell_fall(tmpl) { values("0.080, 0.110", "0.130, 0.160"); }
+        rise_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+        fall_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+      }
+    }
+  }
+  cell(AND2) {
+    area : 3.0;
+    pin(A) { direction : input; capacitance : 0.01; }
+    pin(B) { direction : input; capacitance : 0.01; }
+    pin(Y) {
+      direction : output;
+      function : "A*B";
+      max_capacitance : 0.1;
+      timing() {
+        related_pin : "A";
+        cell_rise(tmpl) { values("0.120, 0.150", "0.170, 0.200"); }
+        cell_fall(tmpl) { values("0.120, 0.150", "0.170, 0.200"); }
+        rise_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+        fall_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+      }
+      timing() {
+        related_pin : "B";
+        cell_rise(tmpl) { values("0.120, 0.150", "0.170, 0.200"); }
+        cell_fall(tmpl) { values("0.120, 0.150", "0.170, 0.200"); }
+        rise_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+        fall_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+      }
+    }
+  }
+  cell(OR2) {
+    area : 3.0;
+    pin(A) { direction : input; capacitance : 0.01; }
+    pin(B) { direction : input; capacitance : 0.01; }
+    pin(Y) {
+      direction : output;
+      function : "A+B";
+      max_capacitance : 0.1;
+      timing() {
+        related_pin : "A";
+        cell_rise(tmpl) { values("0.120, 0.150", "0.170, 0.200"); }
+        cell_fall(tmpl) { values("0.120, 0.150", "0.170, 0.200"); }
+        rise_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+        fall_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+      }
+      timing() {
+        related_pin : "B";
+        cell_rise(tmpl) { values("0.120, 0.150", "0.170, 0.200"); }
+        cell_fall(tmpl) { values("0.120, 0.150", "0.170, 0.200"); }
+        rise_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+        fall_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+      }
+    }
+  }
+  cell(XOR2) {
+    area : 5.0;
+    pin(A) { direction : input; capacitance : 0.01; }
+    pin(B) { direction : input; capacitance : 0.01; }
+    pin(Y) {
+      direction : output;
+      function : "A^B";
+      max_capacitance : 0.1;
+      timing() {
+        related_pin : "A";
+        cell_rise(tmpl) { values("0.180, 0.210", "0.230, 0.260"); }
+        cell_fall(tmpl) { values("0.180, 0.210", "0.230, 0.260"); }
+        rise_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+        fall_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+      }
+      timing() {
+        related_pin : "B";
+        cell_rise(tmpl) { values("0.180, 0.210", "0.230, 0.260"); }
+        cell_fall(tmpl) { values("0.180, 0.210", "0.230, 0.260"); }
+        rise_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+        fall_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+      }
+    }
+  }
+  cell(XNOR2) {
+    area : 5.0;
+    pin(A) { direction : input; capacitance : 0.01; }
+    pin(B) { direction : input; capacitance : 0.01; }
+    pin(Y) {
+      direction : output;
+      function : "!(A^B)";
+      max_capacitance : 0.1;
+      timing() {
+        related_pin : "A";
+        cell_rise(tmpl) { values("0.180, 0.210", "0.230, 0.260"); }
+        cell_fall(tmpl) { values("0.180, 0.210", "0.230, 0.260"); }
+        rise_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+        fall_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+      }
+      timing() {
+        related_pin : "B";
+        cell_rise(tmpl) { values("0.180, 0.210", "0.230, 0.260"); }
+        cell_fall(tmpl) { values("0.180, 0.210", "0.230, 0.260"); }
+        rise_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+        fall_transition(tmpl) { values("0.040, 0.070", "0.090, 0.120"); }
+      }
+    }
+  }
+  cell(DFF) {
+    area : 6;
+    ff(IQ, IQN) { clocked_on : "CLK"; next_state : "D"; }
+    pin(D) { direction : input; capacitance : 0.01; }
+    pin(CLK) { direction : input; clock : true; capacitance : 0.01; }
+    pin(Q) { direction : output; function : "IQ"; max_capacitance : 0.1; }
+  }
+}

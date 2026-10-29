@@ -9,8 +9,10 @@ from pathlib import Path
 
 from rtl_reward_lab.reward import SynthesisMetrics
 from rtl_reward_lab.runner import RunLimits, RunResult, run
+from rtl_reward_lab.tools import DEFAULT_FLOW, SynthFlow, get_flow
 
 _CELL_COUNT_RE = re.compile(r"Number of cells:\s+(\d+)")
+_AREA_RE = re.compile(r"Chip area for (?:top )?module '\\?\S+':\s+([\d.]+)")
 _LONGEST_PATH_RE = re.compile(r"Longest topological path in \S+ \(length=(\d+)\)")
 
 
@@ -48,13 +50,18 @@ def synthesize(
     cwd: str | Path,
     limits: RunLimits | None = None,
     netlist_path: str | Path | None = None,
+    flow: str | SynthFlow = DEFAULT_FLOW,
 ) -> SynthesizeResult:
     """Run a fixed synth + stat + ltp flow over a single source file and
     extract its cell count and logic depth.
 
-    The flow (`synth -top <module>; flatten; stat; ltp`) is intentionally
-    fixed so that cell count and logic depth are comparable across
-    candidates and the reference implementation.
+    The default flow (`synth -top <module>; flatten; stat; ltp`) is
+    intentionally fixed so that cell count and logic depth are comparable
+    across candidates and the reference implementation. Other flows (see
+    tools.py: iCE40/ECP5/Xilinx LUT mapping, or ABC against a Liberty
+    library) swap the mapping step but keep the same fixed `flatten; stat;
+    ltp` tail and the same last-match extraction below, so a candidate and
+    its reference must always be measured with the *same* flow.
 
     Two things make naive regex extraction wrong here, both handled below:
 
@@ -80,9 +87,8 @@ def synthesize(
     design that was never actually verified.
     """
 
-    script = f'read_verilog -sv "{source_path}"; synth -top {top_module}; flatten; stat; ltp'
-    if netlist_path is not None:
-        script += f'; write_verilog -noattr "{netlist_path}"'
+    synth_flow = get_flow(flow) if isinstance(flow, str) else flow
+    script = synth_flow.script(source_path, top_module, netlist_path)
     run_result = run(["yosys", "-p", script], cwd=cwd, limits=limits)
 
     if run_result.timed_out or run_result.output_overflow or run_result.returncode != 0:
@@ -90,11 +96,13 @@ def synthesize(
 
     cell_matches = _CELL_COUNT_RE.findall(run_result.stdout)
     depth_matches = _LONGEST_PATH_RE.findall(run_result.stdout)
-    if not cell_matches or not depth_matches:
+    if not cell_matches or (synth_flow.measures_depth and not depth_matches):
         return SynthesizeResult(ok=False, metrics=None, run_result=run_result)
 
+    area_matches = _AREA_RE.findall(run_result.stdout) if synth_flow.liberty is not None else []
     metrics = SynthesisMetrics(
         cell_count=int(cell_matches[-1]),
-        logic_depth=int(depth_matches[-1]),
+        logic_depth=int(depth_matches[-1]) if synth_flow.measures_depth else 0,
+        area=float(area_matches[-1]) if area_matches else None,
     )
     return SynthesizeResult(ok=True, metrics=metrics, run_result=run_result)

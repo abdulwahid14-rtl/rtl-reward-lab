@@ -9,7 +9,8 @@ from rtl_reward_lab.formal import FormalResult, check_equivalence
 from rtl_reward_lab.policy import ALLOWED_TOP_MODULE, PolicyResult, check_policy
 from rtl_reward_lab.runner import RunLimits
 from rtl_reward_lab.simulate import SimulateResult, simulate
-from rtl_reward_lab.synthesize import SynthesizeResult, find_simcells_v, synthesize
+from rtl_reward_lab.synthesize import SynthesizeResult, synthesize
+from rtl_reward_lab.tools import DEFAULT_FLOW, DEFAULT_SIMULATOR, get_flow, netlist_simulator
 
 _NETLIST_FILENAME = "_candidate_netlist.v"
 
@@ -34,8 +35,15 @@ def evaluate(
     *,
     cwd: str | Path,
     limits: RunLimits | None = None,
+    simulator: str = DEFAULT_SIMULATOR,
+    flow: str = DEFAULT_FLOW,
 ) -> EvaluationResult:
     """Run each evaluation stage in order, stopping at the first hard failure.
+
+    `simulator` and `flow` pick the tools for stages 2-4 (see tools.py); the
+    defaults reproduce the original Icarus + generic-Yosys pipeline. A flow
+    with no behavioral cell models (Liberty) can't pass stage 4's netlist
+    check, so it is rejected here instead of silently skipping the gate.
 
     1. policy.py: reject candidates that use disallowed constructs (file I/O,
        `$system`, simulation output, preprocessor conditionals, etc.) before
@@ -77,6 +85,13 @@ def evaluate(
        yosys's equiv_induct / temporal induction) is tracked as future work.
     """
 
+    synth_flow = get_flow(flow)
+    if not synth_flow.verifiable():
+        raise ValueError(
+            f"flow {flow!r} has no behavioral cell models, so its netlist cannot be "
+            "re-simulated; evaluate() requires a netlist-verifiable flow (see tools.SynthFlow)"
+        )
+
     candidate_source = (Path(cwd) / candidate_path).read_text()
     policy_result = check_policy(candidate_source)
     if not policy_result.allowed:
@@ -90,7 +105,9 @@ def evaluate(
             formal_result=None,
         )
 
-    sim_result = simulate(candidate_path, reference_path, test_path, cwd=cwd, limits=limits)
+    sim_result = simulate(
+        candidate_path, reference_path, test_path, cwd=cwd, limits=limits, simulator=simulator
+    )
     if not sim_result.passed:
         return EvaluationResult(
             passed=False,
@@ -109,6 +126,7 @@ def evaluate(
         cwd=cwd,
         limits=limits,
         netlist_path=netlist_path,
+        flow=synth_flow,
     )
     if not candidate_synth_result.ok:
         return EvaluationResult(
@@ -121,11 +139,11 @@ def evaluate(
             formal_result=None,
         )
 
-    simcells_path = find_simcells_v()
-    if simcells_path is None:
+    sim_lib_path = synth_flow.sim_lib_path()
+    if sim_lib_path is None:
         raise RuntimeError(
-            "could not locate yosys's simcells.v; required to re-simulate the "
-            "synthesized netlist (see synthesize.find_simcells_v)"
+            f"could not locate yosys's {synth_flow.sim_lib} behavioral models; required to "
+            "re-simulate the synthesized netlist (see tools.SynthFlow.sim_lib_path)"
         )
 
     netlist_sim_result = simulate(
@@ -134,7 +152,8 @@ def evaluate(
         test_path,
         cwd=cwd,
         limits=limits,
-        extra_sources=(simcells_path,),
+        extra_sources=(sim_lib_path,),
+        simulator=netlist_simulator(simulator, synth_flow).name,
     )
     if not netlist_sim_result.passed:
         return EvaluationResult(

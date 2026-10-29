@@ -345,6 +345,60 @@ identical from the caller's side, which is worth fixing properly (surface
 `timed_out`-style process-killed-by-signal detail in `SimulateResult`)
 rather than relying on noticing a suspicious 0% rate by eye next time.
 
+## Cross-tool comparison
+
+The pipeline originally trusted one simulator (Icarus) and one synthesis
+configuration (Yosys generic `synth`). `tools.py` now registers alternatives
+and `scripts/compare_tools.py` runs every combination over the 200 committed
+samples (`runs/tool_comparison/`). Defaults are unchanged; `evaluate()`
+accepts `simulator=` and `flow=`.
+
+**Simulators: Icarus Verilog vs. Verilator 5.032.** They disagree on 17 of
+200 samples (Icarus passes 168, Verilator 185), and all 17 are Verilator
+passing what Icarus fails, in two distinct ways:
+
+- **`Prob034_dff8` (9 samples).** Verilator is a two-state simulator, so an
+  uninitialized register reads `0`, which happens to equal the reference's
+  `initial q = 8'h0`. Icarus is four-state and sees `X`, which is the
+  upstream benchmark defect described above. So the dff8 "defect" is
+  simulator-dependent: under Verilator those samples pass. This is also why
+  Verilator is not a substitute for Icarus as the gate here, since a
+  two-state simulator can't tell "reset to 0" from "never initialized".
+- **Compile strictness (8 samples).** Icarus rejects explicit-cast violations
+  and procedural assignment to a `wire`; Verilator accepts both. These are
+  tool leniency differences, not functional ones.
+
+**Synthesis flows.** Every candidate that passed both simulators synthesized
+under all four flows and passed netlist re-simulation under each, so the
+netlist gate found no flow-specific miscompile. Mean reward moved with the
+flow (generic 0.985, iCE40 1.010, ECP5 1.007, Xilinx 0.998), and the mean
+candidate/reference cell ratio ranged 0.99–1.03. Rank correlation of reward
+between flows was low (generic vs. iCE40: -0.04; generic vs. Xilinx: 0.69;
+iCE40 vs. ECP5: 1.00). Treat that carefully: almost every sample scores
+~1.0, so the rankings are mostly ties and tiny differences. It does show
+that fine-grained reward differences are not stable across mappings, which
+is the same weakness as "Reward is relative to the reference" below.
+
+**Area flow (ABC + Liberty, SkyWater sky130_fd_sc_hd tt_025C_1v80).** Run
+over the same samples, all 168 simulation-passing candidates mapped. Mean
+candidate/reference area was 1.000 and cell count 1.006, but the per-sample
+rewards correlate poorly with the other flows (Spearman -0.61 vs. generic,
+-0.86 vs. Xilinx, 0.13 vs. iCE40), again mostly from near-ties around 1.0.
+Two caveats specific to this flow: its netlist **cannot be re-simulated**
+(sky130 cells have no behavioral models here), so its metrics are not
+netlist-verified and `evaluate()` refuses it; and Yosys's `ltp` cannot trace
+through Liberty cells, so logic depth is reported as unmeasured (0) rather
+than a fake number, which means a reward computed from this flow has no depth
+term. The library is downloaded separately and is not committed; point
+`RTL_REWARD_LIBERTY` at it.
+
+**What this does not cover.** Every flow is Yosys, so this varies the
+mapper, not the frontend or the optimizer's core; a truly independent
+synthesizer (e.g. Odin-II) is not integrated. Verilator's two-state model
+limits what its agreement proves. LUT-flow cell counts and Liberty areas are
+different units, so only the candidate-to-reference ratio within a flow is
+comparable. No timing (delay) number is extracted from the Liberty flow.
+
 ## Red-team: an LLM attacking its own evaluator
 
 Separately from generating candidates, four independent fresh model
