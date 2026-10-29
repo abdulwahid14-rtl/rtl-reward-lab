@@ -92,6 +92,17 @@ def test_every_flow_netlist_is_resimulated_and_passes(work_dir, flow):
     assert result.netlist_simulate_result.passed
 
 
+@pytest.mark.parametrize("flow", sorted(FLOWS))
+def test_sequential_design_netlist_passes_under_every_flow(fir_work_dir, flow):
+    # Regression: ECP5's cells_sim.v `include`s a sibling header, and a
+    # combinational design (no flip-flops) never exposed the missing
+    # include path, so a correct sequential candidate was rejected at the
+    # netlist gate.
+    result = evaluate("candidate.sv", "reference.sv", "official_test.sv", cwd=fir_work_dir, flow=flow)
+
+    assert result.passed, result.stage
+
+
 @needs_verilator
 @pytest.mark.parametrize("flow", sorted(FLOWS))
 def test_verilator_with_every_flow_passes_full_pipeline(work_dir, flow):

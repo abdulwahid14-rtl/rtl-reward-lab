@@ -11336,10 +11336,10 @@
         },
         "reference": {
           "cell_count": 11,
-          "logic_depth": 5,
+          "logic_depth": 3,
           "area": null
         },
-        "reward": 1.0
+        "reward": 0.6666666666666667
       },
       "xilinx": {
         "synthesized": true,
@@ -11430,10 +11430,10 @@
         },
         "reference": {
           "cell_count": 11,
-          "logic_depth": 5,
+          "logic_depth": 3,
           "area": null
         },
-        "reward": 1.0
+        "reward": 0.6666666666666667
       },
       "xilinx": {
         "synthesized": true,
@@ -11524,10 +11524,10 @@
         },
         "reference": {
           "cell_count": 11,
-          "logic_depth": 5,
+          "logic_depth": 3,
           "area": null
         },
-        "reward": 1.0
+        "reward": 0.6666666666666667
       },
       "xilinx": {
         "synthesized": true,
@@ -11618,10 +11618,10 @@
         },
         "reference": {
           "cell_count": 11,
-          "logic_depth": 5,
+          "logic_depth": 3,
           "area": null
         },
-        "reward": 1.0
+        "reward": 0.6666666666666667
       },
       "xilinx": {
         "synthesized": true,
@@ -11712,10 +11712,10 @@
         },
         "reference": {
           "cell_count": 11,
-          "logic_depth": 5,
+          "logic_depth": 3,
           "area": null
         },
-        "reward": 1.0
+        "reward": 0.6666666666666667
       },
       "xilinx": {
         "synthesized": true,
@@ -11806,10 +11806,10 @@
         },
         "reference": {
           "cell_count": 11,
-          "logic_depth": 5,
+          "logic_depth": 3,
           "area": null
         },
-        "reward": 1.0
+        "reward": 0.6666666666666667
       },
       "xilinx": {
         "synthesized": true,
@@ -11900,10 +11900,10 @@
         },
         "reference": {
           "cell_count": 11,
-          "logic_depth": 5,
+          "logic_depth": 3,
           "area": null
         },
-        "reward": 1.0
+        "reward": 0.6666666666666667
       },
       "xilinx": {
         "synthesized": true,
@@ -11994,10 +11994,10 @@
         },
         "reference": {
           "cell_count": 11,
-          "logic_depth": 5,
+          "logic_depth": 3,
           "area": null
         },
-        "reward": 1.0
+        "reward": 0.6666666666666667
       },
       "xilinx": {
         "synthesized": true,
@@ -12088,10 +12088,10 @@
         },
         "reference": {
           "cell_count": 11,
-          "logic_depth": 5,
+          "logic_depth": 3,
           "area": null
         },
-        "reward": 1.0
+        "reward": 0.6666666666666667
       },
       "xilinx": {
         "synthesized": true,
@@ -12182,10 +12182,10 @@
         },
         "reference": {
           "cell_count": 11,
-          "logic_depth": 5,
+          "logic_depth": 3,
           "area": null
         },
-        "reward": 1.0
+        "reward": 0.6666666666666667
       },
       "xilinx": {
         "synthesized": true,
@@ -14620,8 +14620,8 @@
         "synthesized": true,
         "netlist_passed": true,
         "candidate": {
-          "cell_count": 44,
-          "logic_depth": 20,
+          "cell_count": 43,
+          "logic_depth": 26,
           "area": null
         },
         "reference": {

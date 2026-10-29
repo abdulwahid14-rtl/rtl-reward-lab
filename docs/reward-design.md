@@ -371,13 +371,41 @@ passing what Icarus fails, in two distinct ways:
 **Synthesis flows.** Every candidate that passed both simulators synthesized
 under all four flows and passed netlist re-simulation under each, so the
 netlist gate found no flow-specific miscompile. Mean reward moved with the
-flow (generic 0.985, iCE40 1.010, ECP5 1.007, Xilinx 0.998), and the mean
+flow (generic 0.985, iCE40 1.010, ECP5 0.987, Xilinx 0.998), and the mean
 candidate/reference cell ratio ranged 0.99–1.03. Rank correlation of reward
 between flows was low (generic vs. iCE40: -0.04; generic vs. Xilinx: 0.69;
-iCE40 vs. ECP5: 1.00). Treat that carefully: almost every sample scores
+iCE40 vs. ECP5: 0.80). Treat that carefully: almost every sample scores
 ~1.0, so the rankings are mostly ties and tiny differences. It does show
 that fine-grained reward differences are not stable across mappings, which
 is the same weakness as "Reward is relative to the reference" below.
+
+**DSP inference is disabled (`-nodsp`) for ECP5 and Xilinx**, and that was
+found the hard way on `pulse_shaping_fir`: with DSPs on, ECP5's
+`MULT18X18D` has only a blackbox in Yosys (no behavioral model), so the
+netlist could not be re-simulated and every correct multiplier-based
+candidate failed the netlist gate; and on Xilinx a plain `*` became 32
+`DSP48E1` blocks, dropping a candidate to ~450 cells against a reference of
+~2,300 (reward 1.58) purely because of how the multiply was written. A
+related bug is fixed too: ECP5's `cells_sim.v` `include`s a sibling header,
+which the compile step did not search, so sequential ECP5 netlists failed to
+compile (popcount3 has no flip-flops and hid this; `test_tools.py` now
+covers a sequential design under every flow).
+
+### pulse_shaping_fir across tools
+
+13 single-shot model samples plus the example candidate, against the
+reference (`runs/pulse_fir_models/tool_comparison.md`). Both simulators
+agree on every sample: 13 pass, `haiku/03` fails to compile (`}` instead of
+`endmodule`). All 13 passing candidates pass netlist re-simulation under
+every flow. No candidate beats the reference under generic synthesis
+(0.50–0.82 reward), but results differ by flow: under iCE40 most sit near
+1.0 (0.93–1.01) except three GPT samples at ~0.60; ECP5 rewards span
+0.53–1.18 and Xilinx 0.78–1.16, so several candidates beat the reference
+there, and the same design lands on opposite sides depending on the mapper
+(`haiku/01` scores 0.72 under generic but 1.18 under ECP5). Under sky130
+area, candidates are 1.14–1.50x the reference's 14,916 µm² except
+`gpt-6.1-terra` (1.00x), which is also the best or tied-best sample under
+generic, iCE40 and Xilinx.
 
 **Area flow (ABC + Liberty, SkyWater sky130_fd_sc_hd tt_025C_1v80).** Run
 over the same samples, all 168 simulation-passing candidates mapped. Mean

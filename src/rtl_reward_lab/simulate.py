@@ -52,7 +52,8 @@ def simulate(
 
     backend = get_simulator(simulator)
     sources = [str(candidate_path), str(reference_path), str(test_path), *(str(p) for p in extra_sources)]
-    compile_command, run_command = backend.build_commands(sources, "simulation.vvp")
+    include_dirs = tuple(sorted({str(Path(p).resolve().parent) for p in extra_sources}))
+    compile_command, run_command = backend.build_commands(sources, "simulation.vvp", include_dirs)
     backend.clean_build_dir(cwd)
 
     # Verilator compiles the design to C++ and invokes g++, which needs far

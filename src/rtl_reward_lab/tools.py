@@ -39,12 +39,19 @@ class Simulator:
     def available(self) -> bool:
         return shutil.which(self.binary) is not None
 
-    def build_commands(self, sources: list[str], compiled: str) -> tuple[list[str], list[str]]:
-        """Return (compile_command, run_command) for `sources` with top `tb`."""
+    def build_commands(
+        self, sources: list[str], compiled: str, include_dirs: tuple[str, ...] = ()
+    ) -> tuple[list[str], list[str]]:
+        """Return (compile_command, run_command) for `sources` with top `tb`.
 
+        `include_dirs` are searched for `include`d files: some Yosys cell
+        models (ECP5's) `include a header sitting next to them.
+        """
+
+        includes = [f"-I{d}" for d in include_dirs]
         if self.name == "iverilog":
             return (
-                ["iverilog", "-g2012", "-s", "tb", "-o", compiled, *sources],
+                ["iverilog", "-g2012", "-s", "tb", *includes, "-o", compiled, *sources],
                 ["vvp", "-N", compiled],
             )
         if self.name == "verilator":
@@ -56,7 +63,7 @@ class Simulator:
                 [
                     "verilator", "--binary", "--timing", "-j", "2",
                     "-Wno-fatal", "-Wno-lint", "-Wno-style",
-                    "--top-module", "tb", "-Mdir", _VERILATOR_MDIR, *sources,
+                    "--top-module", "tb", *includes, "-Mdir", _VERILATOR_MDIR, *sources,
                 ],
                 [f"./{_VERILATOR_MDIR}/Vtb"],
             )
@@ -168,17 +175,23 @@ FLOWS: dict[str, SynthFlow] = {
         "ice40/cells_sim.v",
         vendor_models=True,
     ),
+    # -nodsp on both: ECP5's MULT18X18D has no behavioral model in Yosys (only
+    # a blackbox), so a netlist using it cannot be re-simulated at all; and on
+    # Xilinx, DSP inference lets a plain `*` collapse ~5x in cell count while a
+    # differently-written multiply does not, so cell counts would measure DSP
+    # inference rather than the design. LUT/carry logic only keeps flows
+    # comparable and every netlist verifiable.
     "ecp5": SynthFlow(
         "ecp5",
-        "Yosys `synth_ecp5`: 4-input LUTs + carry (Lattice ECP5)",
-        "synth_ecp5 -top {top}; flatten",
+        "Yosys `synth_ecp5 -nodsp`: 4-input LUTs + carry (Lattice ECP5)",
+        "synth_ecp5 -nodsp -top {top}; flatten",
         "ecp5/cells_sim.v",
         vendor_models=True,
     ),
     "xilinx": SynthFlow(
         "xilinx",
-        "Yosys `synth_xilinx`: 6-input LUTs + carry (Xilinx 7-series)",
-        "synth_xilinx -top {top}; flatten",
+        "Yosys `synth_xilinx -nodsp`: 6-input LUTs + carry (Xilinx 7-series)",
+        "synth_xilinx -nodsp -top {top}; flatten",
         "xilinx/cells_sim.v",
         vendor_models=True,
     ),
